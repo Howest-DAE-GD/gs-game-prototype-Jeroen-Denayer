@@ -4,21 +4,12 @@
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
 {
-	Initialize();
+
 }
 
 Game::~Game( )
 {
-	Cleanup( );
-}
 
-void Game::Initialize( )
-{
-	
-}
-
-void Game::Cleanup( )
-{
 }
 
 void Game::Update( float elapsedSec )
@@ -37,7 +28,10 @@ void Game::Update( float elapsedSec )
 
 void Game::Draw( ) const
 {
-	ClearBackground( );
+	glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
@@ -101,10 +95,4 @@ void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 	//	std::cout << " middle button " << std::endl;
 	//	break;
 	//}
-}
-
-void Game::ClearBackground( ) const
-{
-	glClearColor( 0.0f, 0.0f, 0.3f, 1.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
 }

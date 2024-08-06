@@ -22,9 +22,7 @@ public:
 	void ProcessMouseUpEvent( const SDL_MouseButtonEvent& e ) override;
 
 private:
+	//Functions
 
-	// FUNCTIONS
-	void Initialize();
-	void Cleanup( );
-	void ClearBackground( ) const;
+	//Members
 };
