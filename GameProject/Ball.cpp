@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Ball.h"
 
-Ball::Ball(float rad, float yPos, float speed)
-	: m_Rad{ rad }
+Ball::Ball(float size, float yPos, float speed)
+	: m_Rad{ size / 2.f }
 	, m_YPos{ yPos }
 	, m_Speed{ speed }
 {
