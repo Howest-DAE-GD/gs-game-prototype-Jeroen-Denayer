@@ -1,19 +1,28 @@
 #include "pch.h"
 #include "Game.h"
+#include "BallManager.h"
+#include "Lighter.h"
+#include "UI.h"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
+	, m_pBallManager{ new BallManager(Point2f{0.f, GetViewPort().height}, 200.f) }
+	, m_pLighter{ new Lighter(Point2f{0.f, GetViewPort().height * 0.2f}, 100.f, 40.f) }
+	, m_pUI{ new UI(GetViewPort()) }
 {
-
+	m_pBallManager->Start();
 }
 
 Game::~Game( )
 {
-
+	delete m_pBallManager;
+	delete m_pLighter;
+	delete m_pUI;
 }
 
-void Game::Update( float elapsedSec )
+void Game::Update( float dt )
 {
+	m_pBallManager->Update(dt, m_pLighter->GetData());
 	// Check keyboard state
 	//const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
 	//if ( pStates[SDL_SCANCODE_RIGHT] )
@@ -28,33 +37,41 @@ void Game::Update( float elapsedSec )
 
 void Game::Draw( ) const
 {
-	glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	//Center x-axis on screen
+	Rectf vp{ GetViewPort() };
 
+	glPushMatrix();
+	glTranslatef(vp.width / 2, 0.f, 0);
+	glScalef(1.f, 1.f, 1.f);
+	//#############
+
+	m_pBallManager->Draw();
+	m_pLighter->Draw();
+	
+	//#############
+	glPopMatrix();
+
+	m_pUI->Draw();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
-	//std::cout << "KEYDOWN event: " << e.keysym.sym << std::endl;
+	switch (e.keysym.sym)
+	{
+	case SDLK_SPACE:
+		if (m_pBallManager->IsBallHit(m_pLighter->GetData()))
+		{
+			m_pUI->IncreaseScore(1);
+		}
+		break;
+	}
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 {
-	//std::cout << "KEYUP event: " << e.keysym.sym << std::endl;
-	//switch ( e.keysym.sym )
-	//{
-	//case SDLK_LEFT:
-	//	//std::cout << "Left arrow key released\n";
-	//	break;
-	//case SDLK_RIGHT:
-	//	//std::cout << "`Right arrow key released\n";
-	//	break;
-	//case SDLK_1:
-	//case SDLK_KP_1:
-	//	//std::cout << "Key 1 released\n";
-	//	break;
-	//}
 }
 
 void Game::ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e )

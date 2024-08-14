@@ -1,5 +1,11 @@
 #pragma once
 #include "BaseGame.h"
+
+//Forward declarations
+class BallManager;
+class Lighter;
+class UI;
+
 class Game : public BaseGame
 {
 public:
@@ -11,7 +17,7 @@ public:
 	// http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rh-override
 	~Game();
 
-	void Update( float elapsedSec ) override;
+	void Update( float dt ) override;
 	void Draw( ) const override;
 
 	// Event handling
@@ -25,4 +31,7 @@ private:
 	//Functions
 
 	//Members
+	BallManager* m_pBallManager;
+	Lighter* m_pLighter;
+	UI* m_pUI;
 };
