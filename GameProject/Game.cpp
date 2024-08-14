@@ -7,7 +7,7 @@
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
 	, m_pBallManager{ new BallManager(Point2f{0.f, GetViewPort().height}, 200.f) }
-	, m_pLighter{ new Lighter(Point2f{0.f, GetViewPort().height * 0.2f}, m_pBallManager->GetBallSizes()) }
+	, m_pLighter{ new Lighter(Point2f{0.f, GetViewPort().height * 0.2f}, 100.f, 40.f) }
 	, m_pUI{ new UI(GetViewPort()) }
 {
 	m_pBallManager->Start();
@@ -67,11 +67,6 @@ void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 			m_pUI->IncreaseScore(1);
 		}
 		break;
-	case SDLK_UP:
-		m_pLighter->IncreaseSize();
-		break;
-	case SDLK_DOWN:
-		m_pLighter->DecreaseSize();
 	}
 }
 

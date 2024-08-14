@@ -10,13 +10,13 @@ int SDL_main(int argv, char** args)
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
 
-	StartHeapControl();
+	//StartHeapControl();
 
 	Game* pGame{ new Game{ Window{ "GS Retake - Denayer, Jeroen - 1DAE14", 414.f , 896.f } } };
 	pGame->Run();
 	delete pGame;
 
-	DumpMemoryLeaks();
+	//DumpMemoryLeaks();
 	return 0;
 }
 

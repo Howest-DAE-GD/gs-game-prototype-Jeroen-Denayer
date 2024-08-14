@@ -7,7 +7,7 @@ class BallManager;
 class Ball
 {
 public:
-	Ball(float size, float yPos, float speed);
+	Ball(float rad, float yPos, float speed);
 	void Draw() const;
 	void Update(float dt, const Lighter::Data& lighterData);
 private:

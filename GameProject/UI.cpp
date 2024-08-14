@@ -21,9 +21,17 @@ UI::~UI()
 
 void UI::Draw() const
 {
-	std::string digistString{ std::to_string(m_Score) };
-	std::reverse(digistString.begin(), digistString.end());
-	std::stringstream digitsStream{ digistString };
+	float number{ float(m_Score) };
+	std::stringstream digitsStream{};
+	while (number >= 0.f)
+	{
+		number = int(number);
+		int digit{ int(number - int(number / 10) * 10) };
+		digitsStream << digit;
+		number = number / 10;
+		if (number < 1.f)
+			break;
+	}
 
 	int numDigits{ int(digitsStream.str().size()) };
 	float digitWidth{ std::min(m_MaxDigitWidth, m_Viewport.width / numDigits) };
