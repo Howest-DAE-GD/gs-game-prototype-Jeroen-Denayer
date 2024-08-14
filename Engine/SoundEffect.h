@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-struct Mix_Chunk;
+class Mix_Chunk;
 class SoundEffect final
 {
 public:

@@ -10,7 +10,7 @@ BallManager::BallManager(Point2f startPos, float ballSize)
 	, m_pBalls{ std::vector<Ball*>(m_MaxNumBallsOnScreen) }
 	, m_FirstBallIdx{ 0 }
 	, m_LastBallIdx{ int(m_pBalls.size() - 1) }
-	, m_BallSize{ ballSize }
+	, m_BallSizes{ std::vector<float>{50.f, 100.f, 200.f} }
 	, m_DistBetweenBalls{ 100.f }
 {
 }
@@ -77,6 +77,11 @@ bool BallManager::IsBallHit(const Lighter::Data& lighterData)
 	return isBallHit;
 }
 
+const std::vector<float>& BallManager::GetBallSizes()
+{
+	return m_BallSizes;
+}
+
 bool BallManager::IsBallInLighter(Ball* pBall, const Lighter::Data& lighterData)
 {
 	return  pBall && pBall->m_Rad > lighterData.innerRadius && pBall->m_Rad < lighterData.outerRadius &&
@@ -102,7 +107,8 @@ void BallManager::CreateNewBall()
 	if (m_pBalls[newBallIdx])//Remove old ball if it exists
 		delete m_pBalls[newBallIdx];
 
-	m_pBalls[newBallIdx] = new Ball(m_BallSize / 2.f, m_Pos.y + m_BallSize / 2.f, 150.f);
+	float ballSize{ m_BallSizes[rand() % m_BallSizes.size()] };
+	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y + ballSize / 2.f, 150.f);
 
 	++m_LastBallIdx %= m_pBalls.size();
 }
