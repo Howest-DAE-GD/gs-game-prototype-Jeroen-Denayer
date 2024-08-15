@@ -16,7 +16,7 @@ public:
 
 	void Run( );
 
-	virtual void Update(float elapsedSec)
+	virtual void Update(float )
 	{
 		
 	}
@@ -26,23 +26,23 @@ public:
 	}
 
 	// Event handling
-	virtual void ProcessKeyDownEvent(const SDL_KeyboardEvent& e)
+	virtual void ProcessKeyDownEvent(const SDL_KeyboardEvent& )
 	{
 		
 	}
-	virtual void ProcessKeyUpEvent(const SDL_KeyboardEvent& e)
+	virtual void ProcessKeyUpEvent(const SDL_KeyboardEvent& )
 	{
 		
 	}
-	virtual void ProcessMouseMotionEvent(const SDL_MouseMotionEvent& e)
+	virtual void ProcessMouseMotionEvent(const SDL_MouseMotionEvent& )
 	{
 		
 	}
-	virtual void ProcessMouseDownEvent(const SDL_MouseButtonEvent& e)
+	virtual void ProcessMouseDownEvent(const SDL_MouseButtonEvent& )
 	{
 		
 	}
-	virtual void ProcessMouseUpEvent(const SDL_MouseButtonEvent& e)
+	virtual void ProcessMouseUpEvent(const SDL_MouseButtonEvent& )
 	{
 		
 	}
