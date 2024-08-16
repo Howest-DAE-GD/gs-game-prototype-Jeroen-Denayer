@@ -1,0 +1,9 @@
+Gameplay scripting Change log:
+############## Iteration 1 ##############
+- added basic system with balls continuously falling down
+- added the lighter with double rings
+- marked the next ball as red visually
+- pressing space at the right time now captures balls and increase the score
+- added different sized balls and with the up/down arrows you can now match the size of the lighter to catch them
+- Added a health bar, pressing space at the wrong time and not capturing a ball now reduces lives
+- New balls are spawned at the top of the window and wait there until they are activated and fall down

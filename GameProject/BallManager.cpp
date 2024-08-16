@@ -6,6 +6,7 @@ BallManager::BallManager(Point2f startPos, float ballSize)
 	: m_Pos{ startPos }
 	, m_Active{ false }
 	, m_pLevel{ 1 }
+	, m_TimeToNextballSpawn{ 0.f }
 	, m_MaxNumBallsOnScreen{ 5 }
 	, m_pBalls{ std::vector<Ball*>(m_MaxNumBallsOnScreen) }
 	, m_FirstBallIdx{ 0 }
@@ -18,6 +19,7 @@ BallManager::BallManager(Point2f startPos, float ballSize)
 BallManager::~BallManager()
 {
 	for (Ball* pBall : m_pBalls)
+		if (pBall)
 		delete pBall;
 }
 
@@ -44,26 +46,32 @@ void BallManager::Draw() const
 
 void BallManager::Update(float dt, const Lighter::Data& lighterData)
 {
-	std::cout << m_FirstBallIdx << std::endl;
 	if (!m_Active)
 		return;
 
 	//Update existing balls
 	for (Ball* pBall : m_pBalls)
-	{
 		if (pBall)
-		{
 			pBall->Update(dt, lighterData);
-		}
-	}
 
 	//Check if first ball is below the lighter
 	if (IsBallPastLighter(m_pBalls[m_FirstBallIdx], lighterData))
 		SetNextBallActive();
 
 	//Spawn new ball
-	if (CanSpawnNewBall(lighterData))
+	m_TimeToNextballSpawn -= dt;
+	if (m_TimeToNextballSpawn <= 0.f)
 	{
+		//If a ball is already ready, activate it
+		if (m_pBalls[m_LastBallIdx])
+			m_pBalls[m_LastBallIdx]->m_Active = true;
+		else //if there is no ball ready, first create a new one and then immediatly activate it
+		{
+			CreateNewBall();
+			m_pBalls[m_LastBallIdx]->m_Active = true;
+		}
+
+		//Already create the next ball
 		CreateNewBall();
 	}
 }
@@ -94,13 +102,6 @@ bool BallManager::IsBallPastLighter(Ball* pBall, const Lighter::Data& lighterDat
 	return pBall && pBall->m_YPos - pBall->m_Rad < lighterData.pos.y - lighterData.outerRadius;
 }
 
-bool BallManager::CanSpawnNewBall(const Lighter::Data& lighterData)
-{
-	int newBallIdx{ int((m_LastBallIdx + 1) % m_pBalls.size()) };
-	return (!m_pBalls[newBallIdx] || IsBallPastLighter(m_pBalls[newBallIdx], lighterData)) &&
-			(!m_pBalls[m_LastBallIdx] || m_pBalls[m_LastBallIdx]->m_YPos + m_pBalls[m_LastBallIdx]->m_Rad < m_Pos.y - m_DistBetweenBalls);
-}
-
 void BallManager::CreateNewBall()
 {
 	int newBallIdx{ int((m_LastBallIdx + 1) % m_pBalls.size()) };
@@ -111,9 +112,15 @@ void BallManager::CreateNewBall()
 	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y + ballSize / 2.f, 150.f);
 
 	++m_LastBallIdx %= m_pBalls.size();
+
+	m_TimeToNextballSpawn = 2.f;
 }
 
 void BallManager::SetNextBallActive()
 {
 	++m_FirstBallIdx %= m_pBalls.size();
+	m_pBalls[m_FirstBallIdx]->m_Active = true;
+	//If the newly activated ball is the last one, create a new ball
+	if (m_FirstBallIdx == m_LastBallIdx)
+		CreateNewBall();
 }

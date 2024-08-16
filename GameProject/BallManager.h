@@ -20,7 +20,6 @@ private:
 	//Functions
 	bool IsBallInLighter(Ball* pBall, const Lighter::Data& lighterData);
 	bool IsBallPastLighter(Ball* pBall, const Lighter::Data& lighterData);
-	bool CanSpawnNewBall(const Lighter::Data& lighterData);
 	void CreateNewBall();
 	void SetNextBallActive();
 
@@ -28,6 +27,7 @@ private:
 	Point2f m_Pos;
 	bool m_Active;
 	int m_pLevel;
+	float m_TimeToNextballSpawn;
 	int m_MaxNumBallsOnScreen;
 	std::vector<Ball*> m_pBalls;
 	int m_FirstBallIdx;

@@ -29,9 +29,16 @@ public:
 
 private:
 	//Functions
+	void Start();
+	void IncreaseScore(int addedScore);
+	void DecreaseLives(int numLives);
 
 	//Members
 	BallManager* m_pBallManager;
 	Lighter* m_pLighter;
 	UI* m_pUI;
+	int m_Score;
+	int m_StartLives;
+	int m_MaxLives;
+	int m_Lives;
 };

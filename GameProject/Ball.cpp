@@ -2,9 +2,11 @@
 #include "Ball.h"
 
 Ball::Ball(float size, float yPos, float speed)
-	: m_Rad{ size / 2.f }
+	: m_Active{ false }
+	, m_Rad{ size / 2.f }
 	, m_YPos{ yPos }
 	, m_Speed{ speed }
+	, m_TimeToSolve{ 1.f }
 {
 }
 
@@ -15,5 +17,12 @@ void Ball::Draw() const
 
 void Ball::Update(float dt, const Lighter::Data& lighterData)
 {
+	if (!m_Active)
+		return;
 	m_YPos += -m_Speed * dt;	
+}
+
+float Ball::GetTimeToSolve() const
+{
+	return m_TimeToSolve;
 }

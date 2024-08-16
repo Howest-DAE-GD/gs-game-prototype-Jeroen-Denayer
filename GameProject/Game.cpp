@@ -6,11 +6,15 @@
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
-	, m_pBallManager{ new BallManager(Point2f{0.f, GetViewPort().height}, 200.f) }
-	, m_pLighter{ new Lighter(Point2f{0.f, GetViewPort().height * 0.2f}, m_pBallManager->GetBallSizes()) }
+	, m_pBallManager{ nullptr }
+	, m_pLighter{ nullptr }
 	, m_pUI{ new UI(GetViewPort()) }
+	, m_Score{ 0 }
+	, m_StartLives{ 5 }
+	, m_MaxLives{ m_StartLives }
+	, m_Lives{ m_StartLives }
 {
-	m_pBallManager->Start();
+	Start();
 }
 
 Game::~Game( )
@@ -54,7 +58,7 @@ void Game::Draw( ) const
 	//#############
 	glPopMatrix();
 
-	m_pUI->Draw();
+	m_pUI->Draw(m_Score, m_Lives, m_MaxLives);
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
@@ -64,7 +68,11 @@ void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 	case SDLK_SPACE:
 		if (m_pBallManager->IsBallHit(m_pLighter->GetData()))
 		{
-			m_pUI->IncreaseScore(1);
+			IncreaseScore(1);
+		}
+		else
+		{
+			DecreaseLives(1);
 		}
 		break;
 	case SDLK_UP:
@@ -117,4 +125,32 @@ void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 	//	std::cout << " middle button " << std::endl;
 	//	break;
 	//}
+}
+
+void Game::Start()
+{
+	m_Score = 0;
+	m_MaxLives = m_StartLives;
+	m_Lives = m_StartLives;
+
+	if (m_pBallManager)
+		delete m_pBallManager;
+	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height - m_pUI->GetHeight()}, 200.f);
+	m_pBallManager->Start();
+
+	if (m_pLighter)
+		delete m_pLighter;
+	m_pLighter = new Lighter(Point2f{ 0.f, GetViewPort().height * 0.2f }, m_pBallManager->GetBallSizes());
+}
+
+void Game::IncreaseScore(int addedScore)
+{
+	m_Score += addedScore;
+}
+
+void Game::DecreaseLives(int numLives)
+{
+	m_Lives -= numLives;
+	if (m_Lives <= 0)
+		Start();
 }

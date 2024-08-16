@@ -7,13 +7,17 @@ public:
 	UI(const Rectf& viewport);
 	~UI();
 
-	void Draw() const;
-	void IncreaseScore(int addedScore);
+	void Draw(int score, int lives, int maxLives) const;
+	float GetHeight() const;
 private:
+	void DrawScore(int score, float drawHeight) const;
+	void DrawLives(int lives, int maxLives, float drawHeight) const;
+
 	const Rectf& m_Viewport;
 	std::int64_t m_Score;
 	std::vector<Texture*> m_pNumberTextures;
-	float m_MaxDigitWidth;
-	float m_MaxDigitHeight;
+
+	float m_LivesBarHeight;
+	float m_ScoreBarHeight;
 };
 

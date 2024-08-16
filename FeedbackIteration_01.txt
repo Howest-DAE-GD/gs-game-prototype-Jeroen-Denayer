@@ -1,0 +1,27 @@
+Feedback Wouter:
+- Move score and health down below the lighter so it is better visible during gameplay
+- more visual cues for when the ball was succesfully caught or not
+- some rotating elements that need to be matched
+- remove succesfully caught balls and balls that are not caught just keep moving down until they are off-screen
+
+Feedback Bart:
+- Give different colors to different sized balls so it is visually clear which size to pick to catch them
+- Some balls give lifes other balls take away lifes like bombs
+- Add some sound
+
+Feedback Lex:
+- Add left/right movement with fixed steps
+- Make balls disappear if you catch them
+- Add some rotation to some of the balls
+- Ball that changes size when falling down so the player needs to continuously adjust to match the size
+- Per ball missed reduce points or when giving a wrong input so you cant spam spacebar to catch a ball
+- Get to 100 points in a certain time
+- Multiple shapes like triangles and squares
+- Speeding up the more points you get
+- The more points you get the smaller the margin to catch each ball gets. - Balls come from every direction and the player has free movement over the entire screen to catch as many balls as quickly as possible.  (changing screen dimension more to HD instead of mobile res)
+- Multi-stage balls
+- balls when caught changing size
+- Balls when caught explode into multiple balls
+- Balls with a shield that needs to be destroyed before being able to catch it
+- Add background
+- Add some sound
