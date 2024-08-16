@@ -1,0 +1,28 @@
+Iteration 2
+
+-------------------
+##### Changes #####
+- moved UI to the bottom of the screen
+- moved the lighter a bit up so it is less campred against the UI
+- added a counter to each live. This means that as long as the player doesn't press space and tries to catch a ball the live depleats. When it reaches 0, the life is lost. As soon as the player presses space, the life is reset. This incentives the player to not wait to long to catch some balls.
+- balls are blue when they are first, green when they are caught and red when you missed them
+- balls also now fade away if the caught them or missed them
+----------------------------
+##### Target Questions #####
+- Does adding the extra visual cues help enough to clarify the game and it's working?
+- Is the rotation mechanic for the balls to much for the player to keep track of?
+- Is it fun to have balls that first need to be caught and then solved? Does this stop the flow of the game?
+
+--------------------
+##### Feedback #####
+Playtester 1: 
+
+Playtester 2:
+
+Playtester 3:
+
+--------------------
+##### Analysis #####
+answer target questions
+
+Other:

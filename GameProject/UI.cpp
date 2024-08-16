@@ -19,12 +19,11 @@ UI::~UI()
 		delete pTexture;
 }
 
-void UI::Draw(int score, int lives, int maxLives) const
+void UI::Draw(int score, int lives, int maxLives, float percOfLastLifeRemaining) const
 {
 	glPushMatrix();
-	glTranslatef(0.f, m_Viewport.height - m_LivesBarHeight, 0.f);
-	DrawLives(lives, maxLives, m_LivesBarHeight);
-	glTranslatef(0.f, -m_ScoreBarHeight, 0.f);
+	DrawLives(lives, maxLives, percOfLastLifeRemaining, m_LivesBarHeight);
+	glTranslatef(0.f, m_ScoreBarHeight, 0.f);
 	DrawScore(score, m_ScoreBarHeight);
 	glPopMatrix();
 }
@@ -59,23 +58,27 @@ void UI::DrawScore(int score, float drawHeight) const
 	}
 }
 
-void UI::DrawLives(int lives, int maxLives, float drawHeight) const
+void UI::DrawLives(int lives, int maxLives, float percOfLastLifeRemaining, float drawHeight) const
 {
 	float padding{ m_Viewport.width * 0.05f };
 
 	float lifeWidth{ (m_Viewport.width - padding * 2) / maxLives };
 
-	for (int i{}; i < lives; ++i)
+	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
+	for (int i{}; i < lives - 1; ++i)
 	{
 		float leftPos{ padding + i * lifeWidth };
-		utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
 		utils::FillRect(leftPos, 0.f, lifeWidth, drawHeight);
 	}
+	float lastLifeLeftPos{ padding + (lives - 1) * lifeWidth };
+	float lastLifeWidth{ percOfLastLifeRemaining * lifeWidth };
+	utils::FillRect(lastLifeLeftPos, 0.f, lastLifeWidth, drawHeight);
 
+	utils::SetColor(Color4f{ 1.f, 1.f, 1.f, 1.f });
 	for (int i{}; i < maxLives; ++i)
 	{
 		float leftPos{ padding + i * lifeWidth };
-		utils::SetColor(Color4f{ 1.f, 1.f, 1.f, 1.f });
+
 		utils::DrawRect(leftPos, 0.f, lifeWidth, drawHeight);
 	}
 }

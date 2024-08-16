@@ -41,4 +41,6 @@ private:
 	int m_StartLives;
 	int m_MaxLives;
 	int m_Lives;
+	float m_TimeSinceLastPress;
+	float m_TimeToLoseSingleLife;
 };

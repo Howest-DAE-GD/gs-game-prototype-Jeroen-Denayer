@@ -13,6 +13,8 @@ Game::Game( const Window& window )
 	, m_StartLives{ 5 }
 	, m_MaxLives{ m_StartLives }
 	, m_Lives{ m_StartLives }
+	, m_TimeSinceLastPress{ 0.f }
+	, m_TimeToLoseSingleLife{ 5.f }
 {
 	Start();
 }
@@ -26,6 +28,13 @@ Game::~Game( )
 
 void Game::Update( float dt )
 {
+	m_TimeSinceLastPress += dt;
+	if (m_TimeSinceLastPress > m_TimeToLoseSingleLife)
+	{
+		DecreaseLives(1);
+		m_TimeSinceLastPress = 0.f;
+	}
+
 	m_pBallManager->Update(dt, m_pLighter->GetData());
 	// Check keyboard state
 	//const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
@@ -39,7 +48,7 @@ void Game::Update( float dt )
 	//}
 }
 
-void Game::Draw( ) const
+void Game::Draw() const
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -54,11 +63,12 @@ void Game::Draw( ) const
 
 	m_pBallManager->Draw();
 	m_pLighter->Draw();
-	
+
 	//#############
 	glPopMatrix();
 
-	m_pUI->Draw(m_Score, m_Lives, m_MaxLives);
+	float percOfLastLifeRemaining{ (m_TimeToLoseSingleLife - m_TimeSinceLastPress) / m_TimeToLoseSingleLife };
+	m_pUI->Draw(m_Score, m_Lives, m_MaxLives, percOfLastLifeRemaining);
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
@@ -66,14 +76,11 @@ void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 	switch (e.keysym.sym)
 	{
 	case SDLK_SPACE:
+		m_TimeSinceLastPress = 0.f;
 		if (m_pBallManager->IsBallHit(m_pLighter->GetData()))
-		{
 			IncreaseScore(1);
-		}
 		else
-		{
 			DecreaseLives(1);
-		}
 		break;
 	case SDLK_UP:
 		m_pLighter->IncreaseSize();
@@ -135,12 +142,12 @@ void Game::Start()
 
 	if (m_pBallManager)
 		delete m_pBallManager;
-	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height - m_pUI->GetHeight()}, 200.f);
+	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height}, 200.f);
 	m_pBallManager->Start();
 
 	if (m_pLighter)
 		delete m_pLighter;
-	m_pLighter = new Lighter(Point2f{ 0.f, GetViewPort().height * 0.2f }, m_pBallManager->GetBallSizes());
+	m_pLighter = new Lighter(Point2f{ 0.f, GetViewPort().height * 0.3f }, m_pBallManager->GetBallSizes());
 }
 
 void Game::IncreaseScore(int addedScore)
