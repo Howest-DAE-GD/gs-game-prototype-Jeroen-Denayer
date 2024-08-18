@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UI.h"
 #include <sstream>
+#include <cassert>
 
 UI::UI(const Rectf& viewport)
 	: m_Viewport{ viewport }
@@ -52,6 +53,7 @@ void UI::DrawScore(int score, float drawHeight) const
 	{
 		++digitCount;
 		int digit{ digitChar - '0' }; //ascii math
+		assert(digit >= 0 && digit < m_pNumberTextures.size());
 		float rightPos{ m_Viewport.width - padding - digitCount * digitWidth };
 		Rectf dstRect{ rightPos, 0.f, digitWidth, drawHeight };
 		m_pNumberTextures[digit]->Draw(dstRect);

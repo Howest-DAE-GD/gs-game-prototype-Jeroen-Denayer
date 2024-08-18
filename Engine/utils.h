@@ -83,4 +83,8 @@ namespace utils
 
 #pragma endregion CollisionFunctionality
 
+#pragma region Other
+	float SmallestAngleBetween2Angles(float angle1, float angle2, bool normalizeAngles = true);
+	float NormalizeAngle(float angle);
+#pragma endregion Other
 }

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "BallManager.h"
 #include "Ball.h"
+#include "CatchMechanism.h"
+#include "SingleClick.h"
 
 BallManager::BallManager(Point2f startPos, float ballSize)
 	: m_Pos{ startPos }
@@ -11,8 +13,8 @@ BallManager::BallManager(Point2f startPos, float ballSize)
 	, m_pBalls{ std::vector<Ball*>(m_MaxNumBallsOnScreen) }
 	, m_FirstBallIdx{ 0 }
 	, m_LastBallIdx{ int(m_pBalls.size() - 1) }
-	, m_BallSizes{ std::vector<float>{50.f, 100.f, 200.f} }
-	, m_DistBetweenBalls{ 100.f }
+	, m_BallSizes{ std::vector<float>{200.f, 100.f, 50.f} }
+	, m_HitData{}
 {
 }
 
@@ -35,8 +37,8 @@ void BallManager::Draw() const
 		Ball* pBall{ m_pBalls[i] };
 		if (pBall)
 		{
-			if (i == m_FirstBallIdx)
-				pBall->m_Color = Color4f{ 0.192, 0.592, 0.82, 1.f };
+			//if (i == m_FirstBallIdx)
+			//	pBall->m_Color = Color4f{ 0.192f, 0.592f, 0.82f, 1.f };
 			pBall->Draw();
 		}
 	}
@@ -53,11 +55,8 @@ void BallManager::Update(float dt, const Lighter::Data& lighterData)
 			pBall->Update(dt, lighterData);
 
 	//Check if first ball is below the lighter
-	if (IsBallPastLighter(m_pBalls[m_FirstBallIdx], lighterData))
-	{
-		m_pBalls[m_FirstBallIdx]->SetState(Ball::State::Missed);
+	if (m_pBalls[m_FirstBallIdx] && m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Missed)
 		SetNextBallActive();
-	}
 
 	//Spawn new ball
 	m_TimeToNextballSpawn -= dt;
@@ -74,17 +73,14 @@ void BallManager::Update(float dt, const Lighter::Data& lighterData)
 	}
 }
 
-bool BallManager::IsBallHit(const Lighter::Data& lighterData)
+void BallManager::ReceiveInput(const Lighter::Data& lighterData)
 {
 	Ball* pBall{ m_pBalls[m_FirstBallIdx] };
-	bool isBallHit{ pBall && IsBallInLighter(pBall, lighterData) };
-	if (isBallHit)
-		pBall->SetState(Ball::State::Caught);
-	else
-		pBall->SetState(Ball::State::Missed);
+	pBall->ReceiveInput(lighterData);
+	SetHitData();
 
-	SetNextBallActive();
-	return isBallHit;
+	if (pBall->m_State == Ball::State::Completed || pBall->m_State == Ball::State::Missed)
+		SetNextBallActive();
 }
 
 const std::vector<float>& BallManager::GetBallSizes()
@@ -92,16 +88,9 @@ const std::vector<float>& BallManager::GetBallSizes()
 	return m_BallSizes;
 }
 
-bool BallManager::IsBallInLighter(Ball* pBall, const Lighter::Data& lighterData)
+const BallManager::HitData& BallManager::GetHitData() const
 {
-	return  pBall && pBall->m_Rad > lighterData.innerRadius && pBall->m_Rad < lighterData.outerRadius &&
-			pBall->m_YPos + pBall->m_Rad < lighterData.pos.y + lighterData.outerRadius &&
-			pBall->m_YPos + pBall->m_Rad > lighterData.pos.y + lighterData.innerRadius;
-}
-
-bool BallManager::IsBallPastLighter(Ball* pBall, const Lighter::Data& lighterData)
-{
-	return pBall && pBall->m_YPos - pBall->m_Rad < lighterData.pos.y - lighterData.outerRadius;
+	return m_HitData;
 }
 
 void BallManager::CreateNewBall()
@@ -115,8 +104,11 @@ void BallManager::CreateNewBall()
 	if (m_pBalls[newBallIdx])
 		delete m_pBalls[newBallIdx];
 
-	float ballSize{ m_BallSizes[rand() % m_BallSizes.size()] };
-	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 150.f);
+	int ballSizeIdx{ int(rand() % m_BallSizes.size()) };
+	float ballSize{ m_BallSizes[ballSizeIdx] };
+	int score{ ballSizeIdx + 1 };
+
+	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 150.f, score, CatchMechanism::Type::SingleClick);
 	++m_LastBallIdx %= m_pBalls.size();
 
 	m_TimeToNextballSpawn = m_pBalls[m_LastBallIdx]->m_TimeToSolve;
@@ -129,4 +121,14 @@ void BallManager::SetNextBallActive()
 	//If the newly activated ball is the last one, create a new ball
 	if (m_FirstBallIdx == m_LastBallIdx)
 		CreateNewBall();
+}
+
+void BallManager::SetHitData()
+{
+	Ball* pBall{ m_pBalls[m_FirstBallIdx] };
+	m_HitData.completed = pBall->m_State == Ball::State::Completed;
+	if (m_HitData.completed)
+	{
+		m_HitData.score = pBall->m_Points;
+	}
 }

@@ -37,15 +37,15 @@ void Game::Update( float dt )
 
 	m_pBallManager->Update(dt, m_pLighter->GetData());
 	// Check keyboard state
-	//const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
-	//if ( pStates[SDL_SCANCODE_RIGHT] )
-	//{
-	//	std::cout << "Right arrow key is down\n";
-	//}
-	//if ( pStates[SDL_SCANCODE_LEFT] && pStates[SDL_SCANCODE_UP])
-	//{
-	//	std::cout << "Left and up arrow keys are down\n";
-	//}
+	const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
+	if ( pStates[SDL_SCANCODE_RIGHT] )
+	{
+		m_pLighter->DecreaseAngle(dt);
+	}
+	if (pStates[SDL_SCANCODE_LEFT])
+	{
+		m_pLighter->IncreaseAngle(dt);
+	}
 }
 
 void Game::Draw() const
@@ -76,12 +76,16 @@ void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 	switch (e.keysym.sym)
 	{
 	case SDLK_SPACE:
+	{
 		m_TimeSinceLastPress = 0.f;
-		if (m_pBallManager->IsBallHit(m_pLighter->GetData()))
-			IncreaseScore(1);
+		m_pBallManager->ReceiveInput(m_pLighter->GetData());
+		const BallManager::HitData& hitData{ m_pBallManager->GetHitData() };
+		if (hitData.completed)
+			IncreaseScore(hitData.score);
 		else
 			DecreaseLives(1);
 		break;
+	}
 	case SDLK_UP:
 		m_pLighter->IncreaseSize();
 		break;

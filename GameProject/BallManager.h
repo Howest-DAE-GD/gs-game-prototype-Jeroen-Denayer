@@ -8,20 +8,26 @@
 class BallManager final
 {
 public:
+	struct HitData
+	{
+		bool completed;
+		int score;
+	};
+
 	BallManager(Point2f startPos, float ballSize);
 	~BallManager();
 
 	void Start();
 	void Draw() const;
 	void Update(float dt, const Lighter::Data& lighterData);
-	bool IsBallHit(const Lighter::Data& lighterData);
+	void ReceiveInput(const Lighter::Data& lighterData);
 	const std::vector<float>& GetBallSizes();
+	const HitData& GetHitData() const;
 private:
 	//Functions
-	bool IsBallInLighter(Ball* pBall, const Lighter::Data& lighterData);
-	bool IsBallPastLighter(Ball* pBall, const Lighter::Data& lighterData);
 	void CreateNewBall();
 	void SetNextBallActive();
+	void SetHitData();
 
 	//Members
 	Point2f m_Pos;
@@ -34,6 +40,7 @@ private:
 	int m_LastBallIdx;
 
 	std::vector<float> m_BallSizes;
-	float m_DistBetweenBalls;
+
+	HitData m_HitData;
 };
 

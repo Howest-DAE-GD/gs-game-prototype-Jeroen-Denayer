@@ -7,6 +7,21 @@ Iteration 2
 - added a counter to each live. This means that as long as the player doesn't press space and tries to catch a ball the live depleats. When it reaches 0, the life is lost. As soon as the player presses space, the life is reset. This incentives the player to not wait to long to catch some balls.
 - balls are blue when they are first, green when they are caught and red when you missed them
 - balls also now fade away if the caught them or missed them
+- smaller balls give bigger scores
+- restructured Ball behaviour. Now contains a CatchMechanism that needs to be solved for the ball to be caught succesfully.
+- added balls with rotation
+To-Do:
+Ball Types:
+Simple ball: different size, 1-click
+ ... : Ball with multiple layers like an union. Each layer contains a gap and at first the outer layer contains a small ball in it's gap. You now have to rotate the outer layer so the gap matches with the gap from 1 layer smaller. This continues until the small ball reaches the center of the ball. Each layer has a timer counting down. Once the timer reaches 0, the layer is destroyed. If by then, the ball was not moved to another layer, the ball is missed.
+ ... : Ball that contains multiple horizontal or vertical stripes on the inside. A single line moves left/right or up/down and for each stripe, you have to press when the single line is inside. This is also time based. Do this within the time limit to complete the ball.
+
+Catch Mechanism and Solve Mechanism
+Catch Mechanisms:
+- SingleClick 
+
+Simple ball: different size, 1-click
+Rotating ball: different size, different rotation, 1-click
 ----------------------------
 ##### Target Questions #####
 - Does adding the extra visual cues help enough to clarify the game and it's working?

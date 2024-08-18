@@ -3,17 +3,23 @@
 
 float Ball::s_FadeTime{ 0.5f };
 
-Ball::Ball(float size, float yPos, float speed)
+Ball::Ball(float size, float yPos, float speed, int points, CatchMechanism::Type catchMechanismType)
 	: m_State{ State::Idle }
-	, m_TimeSinceCompletion{ 0.f }
-	, m_Points{ 1 }
+	, m_Points{ points }
 	, m_Rad{ size / 2.f }
 	, m_YPos{ yPos }
 	, m_Speed{ speed }
 	, m_TimeToSolve{ 2.f }
+	, m_TimeSinceCompletion{ 0.f }
 	, m_Color{ Color4f{1.f, 1.f, 1.f, 1.f} }
+	, m_pCatchMechanism{ CatchMechanism::Create(catchMechanismType, this) }
 {
 }
+
+Ball::~Ball()
+{
+	delete m_pCatchMechanism;
+} 
 
 void Ball::Draw() const
 {
@@ -30,23 +36,60 @@ void Ball::Draw() const
 	}
 
 	utils::SetColor(color);
-	utils::DrawEllipse(Point2f{ 0.f, m_YPos }, m_Rad, m_Rad, 2.f);
+	m_pCatchMechanism->Draw();
 }
 
 void Ball::Update(float dt, const Lighter::Data& lighterData)
 {
-	if (m_State == State::Idle)
+	switch (m_State)
+	{
+	case State::Idle:
 		return;
-
-	m_YPos += -m_Speed * dt;
-
-	if (m_State == State::Completed || m_State == State::Missed)
+	case State::Active:
+		m_pCatchMechanism->Update(dt, lighterData);
+		if (m_pCatchMechanism->GetState() == CatchMechanism::State::Caught)
+			SetState(State::Caught);
+		else if (m_pCatchMechanism->GetState() == CatchMechanism::State::Missed)
+			SetState(State::Missed);
+		break;
+	case State::Caught:
+		break;
+	case State::Completed: case State::Missed:
 		m_TimeSinceCompletion += dt;
+		break;
+	}
+
+	if (m_State != State::Caught)
+		m_YPos += -m_Speed * dt;
+}
+
+void Ball::ReceiveInput(const Lighter::Data& lighterData)
+{
+	switch (m_State)
+	{
+	case State::Active:
+		m_pCatchMechanism->ReceiveInput(lighterData);
+		if (m_pCatchMechanism->GetState() == CatchMechanism::State::Caught)
+			SetState(State::Caught);
+		else
+			SetState(State::Missed);
+		break;
+	}
 }
 
 float Ball::GetTimeToSolve() const
 {
 	return m_TimeToSolve;
+}
+
+float Ball::GetYPos() const
+{
+	return m_YPos;
+}
+
+float Ball::GetRadius() const
+{
+	return m_Rad;
 }
 
 void Ball::SetState(State newState)
