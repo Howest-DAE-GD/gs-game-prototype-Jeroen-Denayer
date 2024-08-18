@@ -5,7 +5,7 @@ class SingleClick final
 	: public CatchMechanism
 {
 public:
-	SingleClick(Ball* pBall);
+	SingleClick(Ball* pBall, bool hasRotation);
 
 	virtual void Draw() const override;
 	virtual void Update(float dt, const Lighter::Data& lighterData) override;

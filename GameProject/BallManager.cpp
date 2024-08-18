@@ -64,7 +64,7 @@ void BallManager::Update(float dt, const Lighter::Data& lighterData)
 	{
 		//If there is no ball raedy, activate it
 		if (!m_pBalls[m_LastBallIdx])
-			CreateNewBall(); 
+			CreateNewBall();
 		//activate the ball
 		m_pBalls[m_LastBallIdx]->SetState(Ball::State::Active);
 
@@ -108,7 +108,7 @@ void BallManager::CreateNewBall()
 	float ballSize{ m_BallSizes[ballSizeIdx] };
 	int score{ ballSizeIdx + 1 };
 
-	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 150.f, score, CatchMechanism::Type::SingleClick);
+	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 100.f, score, CatchMechanism::Type::SingleClick);
 	++m_LastBallIdx %= m_pBalls.size();
 
 	m_TimeToNextballSpawn = m_pBalls[m_LastBallIdx]->m_TimeToSolve;
@@ -131,4 +131,10 @@ void BallManager::SetHitData()
 	{
 		m_HitData.score = pBall->m_Points;
 	}
+}
+
+CatchMechanism* BallManager::CreateCatchMechanism(CatchMechanism::Type type, Ball* pBall)
+{
+	bool hasRotation{ bool(rand() % 2) };
+	return new SingleClick(pBall, hasRotation);
 }

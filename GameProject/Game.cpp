@@ -14,7 +14,7 @@ Game::Game( const Window& window )
 	, m_MaxLives{ m_StartLives }
 	, m_Lives{ m_StartLives }
 	, m_TimeSinceLastPress{ 0.f }
-	, m_TimeToLoseSingleLife{ 5.f }
+	, m_TimeToLoseSingleLife{ 8.f }
 {
 	Start();
 }

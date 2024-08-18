@@ -7,7 +7,6 @@ class Ball;
 class CatchMechanism
 {
 public:
-
 	enum class State
 	{
 		Active, Caught, Missed
@@ -17,8 +16,6 @@ public:
 	{
 		Base, SingleClick
 	};
-
-	static CatchMechanism* Create(Type type, Ball* pBall);
 protected:
 	CatchMechanism(Type type, Ball* pBall);
 	virtual ~CatchMechanism();

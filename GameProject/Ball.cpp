@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Ball.h"
+#include "BallManager.h"
 
 float Ball::s_FadeTime{ 0.5f };
 
@@ -9,10 +10,10 @@ Ball::Ball(float size, float yPos, float speed, int points, CatchMechanism::Type
 	, m_Rad{ size / 2.f }
 	, m_YPos{ yPos }
 	, m_Speed{ speed }
-	, m_TimeToSolve{ 2.f }
+	, m_TimeToSolve{ 3.f }
 	, m_TimeSinceCompletion{ 0.f }
 	, m_Color{ Color4f{1.f, 1.f, 1.f, 1.f} }
-	, m_pCatchMechanism{ CatchMechanism::Create(catchMechanismType, this) }
+	, m_pCatchMechanism{ BallManager::CreateCatchMechanism(catchMechanismType, this) }
 {
 }
 
@@ -74,7 +75,7 @@ void Ball::ReceiveInput(const Lighter::Data& lighterData)
 		else
 			SetState(State::Missed);
 		break;
-	}
+	} 
 }
 
 float Ball::GetTimeToSolve() const

@@ -30,9 +30,20 @@ Rotating ball: different size, different rotation, 1-click
 
 --------------------
 ##### Feedback #####
-Playtester 1: 
+Playtester 1: Alex
+- Circle that gives health back.
+- New iteration is already way more interesting as it is more challenging and engaging.
+. Can't keep adding new controls as it is already difficult enough. Especially if this would be a mobile game. Maybe make the controls a bit easier somehow so you only need the spacebar.
+- Game is fun but gets boring over time, add some more variation
+- More variation in the score. Some multipliers ore other ways to boost your score.
 
-Playtester 2:
+Playtester 2: Bart
+- It's difficult as you have to manage many different controls, maybe make it a bit easier.
+- Game is more interesting than the previous iteration as there are more elements to manage.
+- Controls can be a bit confusing. Like up/down for rotation instead of for changing size.
+- Visually way clearer when you succesfully caught a ball or not.
+- Size randomness sometimes gives many balls with the same size in a row. Maybe change this so after a while it is guaranteed to be a different size.
+- Add some sound to make it more interesting
 
 Playtester 3:
 

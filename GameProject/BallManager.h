@@ -23,6 +23,7 @@ public:
 	void ReceiveInput(const Lighter::Data& lighterData);
 	const std::vector<float>& GetBallSizes();
 	const HitData& GetHitData() const;
+	static CatchMechanism* CreateCatchMechanism(CatchMechanism::Type type, Ball* pBall);
 private:
 	//Functions
 	void CreateNewBall();

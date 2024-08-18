@@ -2,9 +2,9 @@
 #include "SingleClick.h"
 #include "Ball.h"
 
-SingleClick::SingleClick(Ball* pBall)
+SingleClick::SingleClick(Ball* pBall, bool hasRotation)
 	: CatchMechanism(CatchMechanism::Type::SingleClick, pBall)
-	, m_HasRotation{ true }
+	, m_HasRotation{ hasRotation }
 	, m_Angle{ (rand() % 360) * float(M_PI) / 180.f }
 	, m_AngleDeviation{ 25.f * float(M_PI) / 180.f }
 {
@@ -27,8 +27,8 @@ void SingleClick::Draw() const
 		Point2f p1{std::cosf(fromAngle) * outerScale, yPos + std::sinf(fromAngle) * outerScale };
 		Point2f p2{std::cosf(tillAngle) * innerScale, yPos + std::sinf(tillAngle) * innerScale};
 		Point2f p3{std::cosf(tillAngle) * outerScale, yPos + std::sinf(tillAngle) * outerScale };
-		utils::DrawLine(p0, p1);
-		utils::DrawLine(p2, p3);
+		utils::DrawLine(p0, p1, 2.f);
+		utils::DrawLine(p2, p3, 2.f);
 	}
 	else
 	{
