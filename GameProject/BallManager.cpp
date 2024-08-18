@@ -3,6 +3,7 @@
 #include "Ball.h"
 #include "CatchMechanism.h"
 #include "SingleClick.h"
+#include "Rotation.h"
 
 BallManager::BallManager(Point2f startPos, float ballSize)
 	: m_Pos{ startPos }
@@ -44,7 +45,7 @@ void BallManager::Draw() const
 	}
 }
 
-void BallManager::Update(float dt, const Lighter::Data& lighterData)
+void BallManager::Update(float dt, bool pressedLeft, bool pressedRight)
 {
 	if (!m_Active)
 		return;
@@ -52,7 +53,7 @@ void BallManager::Update(float dt, const Lighter::Data& lighterData)
 	//Update existing balls
 	for (Ball* pBall : m_pBalls)
 		if (pBall)
-			pBall->Update(dt, lighterData);
+			pBall->Update(dt, pressedLeft, pressedRight);
 
 	//Check if first ball is below the lighter
 	if (m_pBalls[m_FirstBallIdx] && m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Missed)
@@ -73,10 +74,10 @@ void BallManager::Update(float dt, const Lighter::Data& lighterData)
 	}
 }
 
-void BallManager::ReceiveInput(const Lighter::Data& lighterData)
+void BallManager::Click()
 {
 	Ball* pBall{ m_pBalls[m_FirstBallIdx] };
-	pBall->ReceiveInput(lighterData);
+	pBall->Click();
 	SetHitData();
 
 	if (pBall->m_State == Ball::State::Completed || pBall->m_State == Ball::State::Missed)
@@ -108,7 +109,8 @@ void BallManager::CreateNewBall()
 	float ballSize{ m_BallSizes[ballSizeIdx] };
 	int score{ ballSizeIdx + 1 };
 
-	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 100.f, score, CatchMechanism::Type::SingleClick);
+	MiniGame* pMiniGame{ new Rotation() };
+	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 100.f, score, pMiniGame);
 	++m_LastBallIdx %= m_pBalls.size();
 
 	m_TimeToNextballSpawn = m_pBalls[m_LastBallIdx]->m_TimeToSolve;
@@ -131,10 +133,4 @@ void BallManager::SetHitData()
 	{
 		m_HitData.score = pBall->m_Points;
 	}
-}
-
-CatchMechanism* BallManager::CreateCatchMechanism(CatchMechanism::Type type, Ball* pBall)
-{
-	bool hasRotation{ bool(rand() % 2) };
-	return new SingleClick(pBall, hasRotation);
 }

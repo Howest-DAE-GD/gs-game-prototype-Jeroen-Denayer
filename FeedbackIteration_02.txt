@@ -3,52 +3,56 @@ Iteration 2
 -------------------
 ##### Changes #####
 - moved UI to the bottom of the screen
-- moved the lighter a bit up so it is less campred against the UI
-- added a counter to each live. This means that as long as the player doesn't press space and tries to catch a ball the live depleats. When it reaches 0, the life is lost. As soon as the player presses space, the life is reset. This incentives the player to not wait to long to catch some balls.
-- balls are blue when they are first, green when they are caught and red when you missed them
+- moved the lighter a bit up so it is less cramped against the UI
+- added a counter to each live. This means that as long as the player doesn't press space and tries to catch a ball the life depleats. When it reaches 0, the life is lost. As soon as the player presses space, the life is reset. This incentivises the player to not wait to long to catch some balls.
+- balls are now green when they are caught and red when you missed them for better visual feedback
 - balls also now fade away if the caught them or missed them
 - smaller balls give bigger scores
 - restructured Ball behaviour. Now contains a CatchMechanism that needs to be solved for the ball to be caught succesfully.
 - added balls with rotation
-To-Do:
-Ball Types:
-Simple ball: different size, 1-click
- ... : Ball with multiple layers like an union. Each layer contains a gap and at first the outer layer contains a small ball in it's gap. You now have to rotate the outer layer so the gap matches with the gap from 1 layer smaller. This continues until the small ball reaches the center of the ball. Each layer has a timer counting down. Once the timer reaches 0, the layer is destroyed. If by then, the ball was not moved to another layer, the ball is missed.
- ... : Ball that contains multiple horizontal or vertical stripes on the inside. A single line moves left/right or up/down and for each stripe, you have to press when the single line is inside. This is also time based. Do this within the time limit to complete the ball.
 
-Catch Mechanism and Solve Mechanism
-Catch Mechanisms:
-- SingleClick 
-
-Simple ball: different size, 1-click
-Rotating ball: different size, different rotation, 1-click
 ----------------------------
 ##### Target Questions #####
 - Does adding the extra visual cues help enough to clarify the game and it's working?
 - Is the rotation mechanic for the balls to much for the player to keep track of?
-- Is it fun to have balls that first need to be caught and then solved? Does this stop the flow of the game?
 
 --------------------
 ##### Feedback #####
 Playtester 1: Alex
 - Circle that gives health back.
 - New iteration is already way more interesting as it is more challenging and engaging.
-. Can't keep adding new controls as it is already difficult enough. Especially if this would be a mobile game. Maybe make the controls a bit easier somehow so you only need the spacebar.
+. Can't keep adding new controls as it is already difficult enough. Especially if this would be a mobile game. Maybe make the controls a bit easier somehow so you only need the spacebar so it is a clicker game.
 - Game is fun but gets boring over time, add some more variation
-- More variation in the score. Some multipliers ore other ways to boost your score.
+- More variation in the score. Some multipliers or other ways to boost your score.
 
 Playtester 2: Bart
 - It's difficult as you have to manage many different controls, maybe make it a bit easier.
 - Game is more interesting than the previous iteration as there are more elements to manage.
-- Controls can be a bit confusing. Like up/down for rotation instead of for changing size.
+- Controls can be a bit confusing. Like up/down for rotation instead of for changing size. (personal preference)
 - Visually way clearer when you succesfully caught a ball or not.
 - Size randomness sometimes gives many balls with the same size in a row. Maybe change this so after a while it is guaranteed to be a different size.
 - Add some sound to make it more interesting
 
-Playtester 3:
+Playtester 3: Wouter
+- Visually all the lines match up (size and rotation) so you think you can correctly catch a ball, but then the angle is a tiny bit off causing a miss
+- score and health on the bottom is better visually now
+- currently, when balls you don't try to catch are past the lighter, they also disappear. The same as for missed balls. This is sometimes a bit confusing.
+- number of controls to manage is fine at the moment but might get difficult if more keys/actions required are added.
+
+Playtest 4: Augusto
+- Not immediatly clear what the controls are or what the purpose of the game is.
+- Quickly boring, add increasing pace/difficulty (like piano tiles)
+- Even more visual feedback with color (make it prettier) => stretch goal
+- controls are getting a bit complex, adding more features requiring more controls will quickly become to difficult
+- add some mini games inside of the ball itself like for example the fishing mini-games in Dredge
 
 --------------------
 ##### Analysis #####
 answer target questions
+- Does adding the extra visual cues help enough to clarify the game and it's working?
+	The extra visual cues for when you succesfully caught or missed a ball definitely helped a lot in this iteration. Something else that was mentioned however, is that the controls and how to play the game are not immediatly clear. At the moment, I will just solve this by giving playtesters a small introduction, but in the future a tutorial might be handy.
+- Is the rotation mechanic for the balls to much for the player to keep track of?
+	Some really liked the extra complexity it brought, others found that the 5 controls (space, left/right, up/down) were already a bit much too handle. Almost everybody agreed that adding more mechanics/features/actions that required even more keys/controls would quickly make it too difficult. As I am also currently making the game to potentially be on mobile I have too think of how all these controls will map onto a phone screen. And I think they will not. Read conclusion for new idea!
 
-Other:
+Next idea:
+As I am targeting mobile, and the game currently will quickly get too difficult with too many controls. I plan on making the following iteration quite a lot different. The control unit/lighter (double rings with the line) that you control will be removed. And the balls themselves will have mini-games inside them. With only using spacebar and the left/right arrow keys you will be able to play the mini-game inside of the ball. You have to solve the mini-game before the ball falls below a certain height/line on the screen. This is also inspired by many fishing games that include mini-games to catch a fish like for example Dredge. So that is the plan for iteration 3.

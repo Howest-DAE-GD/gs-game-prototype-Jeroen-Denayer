@@ -86,5 +86,7 @@ namespace utils
 #pragma region Other
 	float SmallestAngleBetween2Angles(float angle1, float angle2, bool normalizeAngles = true);
 	float NormalizeAngle(float angle);
+	float Degrees(float radians);
+	float Radians(float degrees);
 #pragma endregion Other
 }

@@ -686,9 +686,9 @@ bool utils::IntersectRectLine(const Rectf& r, const Point2f& p1, const Point2f& 
 /*
 * Returns the smalles angle between angle1 and angle2
 Parameters:
-- angle1: angle in radians
-- angle2: angle in radians
-- normalizeAngles: brings both angles between the range of 0-2PI
+- angle1: angle in degrees
+- angle2: angle in degrees
+- normalizeAngles: brings both angles between the range of 0-360
 */
 float utils::SmallestAngleBetween2Angles(float angle1, float angle2, bool normalizeAngles)
 {
@@ -699,22 +699,19 @@ float utils::SmallestAngleBetween2Angles(float angle1, float angle2, bool normal
 	}
 
 	float angleDiff{ std::abs(angle1 - angle2) };
-	if (angleDiff > float(M_PI))
-		angleDiff = 2 * float(M_PI) - angleDiff;
+	if (angleDiff > 180.f)
+		angleDiff = 360.f - angleDiff;
 	return angleDiff;
 }
 
 /*
-Returns angle in the range 0-2PI
+Returns angle in the range 0-360
 Parameters:
-- Angle: Angle in radians
+- Angle: Angle in degrees
 */
 float utils::NormalizeAngle(float angle)
 {
 	bool negative{ angle < 0.f };
-
-	//convert to degrees for easier calculation
-	angle *= 180.f / float(M_PI);
 
 	if (std::abs(angle) > 360.f)
 		angle = int(angle) % 360 + (angle - int(angle));
@@ -722,8 +719,17 @@ float utils::NormalizeAngle(float angle)
 	if (negative)
 		angle = 360.f - angle;
 
-	//convert back to radians
-	return angle * float(M_PI) / 180.f;
+	return angle;
+}
+
+float utils::Degrees(float radians)
+{
+	return radians * 180.f / float(M_PI);
+}
+
+float utils::Radians(float degrees)
+{
+	return degrees * float(M_PI) / 180.f;
 }
 
 #pragma endregion CollisionFunctionality

@@ -1,9 +1,8 @@
 #pragma once
-#include "Lighter.h"
-#include "CatchMechanism.h"
 
 //Forward declarations
 class BallManager;
+class MiniGame;
 
 class Ball
 {
@@ -13,12 +12,12 @@ public:
 		Idle, Active, Caught, Missed, Completed
 	};
 
-	Ball(float size, float yPos, float speed, int points, CatchMechanism::Type catchMechanismType);
+	Ball(float size, float yPos, float speed, int points, MiniGame* pMiniGame);
 	~Ball();
 
 	void Draw() const;
-	void Update(float dt, const Lighter::Data& lighterData);
-	void ReceiveInput(const Lighter::Data& lighterData);
+	void Update(float dt, bool pressedLeft, bool pressedRight);
+	void Click();
 
 	float GetTimeToSolve() const;
 	float GetYPos() const;
@@ -37,7 +36,7 @@ private:
 	float m_TimeSinceCompletion;
 	Color4f m_Color;
 
-	CatchMechanism* m_pCatchMechanism;
+	MiniGame* m_pMiniGame;
 
 	static float s_FadeTime;
 

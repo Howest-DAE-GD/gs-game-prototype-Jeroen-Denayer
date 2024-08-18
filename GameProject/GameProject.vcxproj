@@ -199,7 +199,9 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Lighter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MiniGame.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Rotation.cpp" />
     <ClCompile Include="SingleClick.cpp" />
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
@@ -209,7 +211,9 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClInclude Include="CatchMechanism.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Lighter.h" />
+    <ClInclude Include="MiniGame.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Rotation.h" />
     <ClInclude Include="SingleClick.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>

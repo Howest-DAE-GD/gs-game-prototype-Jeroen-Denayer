@@ -19,11 +19,10 @@ public:
 
 	void Start();
 	void Draw() const;
-	void Update(float dt, const Lighter::Data& lighterData);
-	void ReceiveInput(const Lighter::Data& lighterData);
+	void Update(float dt, bool pressedLeft, bool pressedRight);
+	void Click();
 	const std::vector<float>& GetBallSizes();
 	const HitData& GetHitData() const;
-	static CatchMechanism* CreateCatchMechanism(CatchMechanism::Type type, Ball* pBall);
 private:
 	//Functions
 	void CreateNewBall();
