@@ -36,6 +36,16 @@ struct Rectf
 };
 
 
+struct Color3f
+{
+	Color3f();
+	explicit Color3f(float r, float g, float b);
+
+	float r;
+	float g;
+	float b;
+};
+
 struct Color4f
 {
 	Color4f( );

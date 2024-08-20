@@ -1,0 +1,24 @@
+Iteration 2
+
+-------------------
+##### Changes #####
+- added utils::DrawArcBand and utils::FillArcBand functions
+- added new color functionality to the engine that enables you to set a global color and alpha to overwrite other colors. Handy to force an entire object to draw in a single color
+- added a deadline, you need to solve each ball before it passes below this line.
+
+----------------------------
+##### Target Questions #####
+
+
+--------------------
+##### Feedback #####
+Playtester 1:
+
+Playtester 2:
+
+Playtester 3:
+
+Playtest 4:
+
+--------------------
+##### Analysis #####

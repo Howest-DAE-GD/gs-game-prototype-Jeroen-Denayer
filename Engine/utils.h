@@ -7,9 +7,32 @@ namespace utils
 	const float g_Pi{ 3.1415926535f };
 
 #pragma region OpenGLDrawFunctionality
+	extern Color4f glGlobalColor;
+	extern bool glUseGlobalColor;
+	extern bool glUseGlobalAlpha;
 
-	void SetColor( const Color4f& color );
-	
+	/*
+	Use this function to draw with a custom alpha
+	Parameters:
+	- forceColor: skips glUseGlobalColor
+	- forceAlpha: skips glUseGlobalAlpha
+	*/
+	void SetColor( const Color4f& color, bool forceColor = false, bool forceAlpha = false);
+	/*
+	Use this function to draw with glGlobalColor.a
+	Parameters:
+	- forceColor: skips glUseGlobalColor
+	*/
+	void SetColor(const Color3f& color, float alpha = 1.f, bool forceColor = false, bool forceAlpha = false);
+	void SetGlobalAlpha(float alpha);
+	//Each call to this function should be matched with a UseGlobalAlpha(false) call when global alpha is no longer needed
+	void UseGlobalAlpha(bool useGlobalAlpha);
+	void UseGlobalColorAndAlpha(bool useGlobalColorAndAlpha);
+	void SetGlobalColorAndAlpha(const Color4f& color);
+	void SetGlobalColor(const Color3f& color);
+	//Each call to this function should be matched with a UseGlobalColor(false) call when global color is no longer needed
+	void UseGlobalColor(bool useGlobalColor);
+
 	void DrawPoint( float x, float y, float pointSize = 1.0f );
 	void DrawPoint( const Point2f& p, float pointSize = 1.0f );
 	void DrawPoints( Point2f *pVertices, int nrVertices, float pointSize = 1.0f );
@@ -42,6 +65,9 @@ namespace utils
 	void FillArc(float centerX, float centerY, float radX, float radY, float fromAngle, float tillAngle);
 	// Fills an arc. The angle parameters are in radians, not in degrees.
 	void FillArc(const Point2f& center, float radX, float radY, float fromAngle, float tillAngle);
+
+	void DrawArcBand(const Point2f center, float innerRad, float outerRad, float fromAngle, float tillAngle, float lineWidth = 1.0f);
+	void FillArcBand(const Point2f center, float innerRad, float outerRad, float fromAngle, float tillAngle);
 
 	void DrawPolygon( const std::vector<Point2f>& vertices, bool closed = true, float lineWidth = 1.0f );
 	void DrawPolygon( const Point2f* pVertices, size_t nrVertices, bool closed = true, float lineWidth = 1.0f );

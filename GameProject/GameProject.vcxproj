@@ -195,26 +195,22 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="BallManager.cpp" />
-    <ClCompile Include="CatchMechanism.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Lighter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MiniGame.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Rotation.cpp" />
-    <ClCompile Include="SingleClick.cpp" />
+    <ClCompile Include="SetRotationGame.cpp" />
+    <ClCompile Include="SelectColorGame.cpp" />
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="BallManager.h" />
-    <ClInclude Include="CatchMechanism.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Lighter.h" />
     <ClInclude Include="MiniGame.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Rotation.h" />
-    <ClInclude Include="SingleClick.h" />
+    <ClInclude Include="SetRotationGame.h" />
+    <ClInclude Include="SelectColorGame.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

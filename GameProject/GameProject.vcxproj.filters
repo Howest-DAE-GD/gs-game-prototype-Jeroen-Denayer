@@ -30,22 +30,16 @@
     <ClCompile Include="BallManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lighter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CatchMechanism.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleClick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MiniGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Rotation.cpp">
+    <ClCompile Include="SetRotationGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectColorGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,22 +56,16 @@
     <ClInclude Include="BallManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Lighter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CatchMechanism.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleClick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MiniGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Rotation.h">
+    <ClInclude Include="SetRotationGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectColorGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

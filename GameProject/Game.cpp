@@ -1,20 +1,22 @@
 #include "pch.h"
 #include "Game.h"
 #include "BallManager.h"
-#include "Lighter.h"
 #include "UI.h"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
+	, m_Viewport{ GetViewPort() }
 	, m_pBallManager{ nullptr }
 	, m_pLighter{ nullptr }
-	, m_pUI{ new UI(GetViewPort()) }
+	, m_pUI{ new UI(m_Viewport) }
 	, m_Score{ 0 }
 	, m_StartLives{ 5 }
 	, m_MaxLives{ m_StartLives }
 	, m_Lives{ m_StartLives }
 	, m_TimeSinceLastPress{ 0.f }
 	, m_TimeToLoseSingleLife{ 8.f }
+	, m_DeadlineHeight{}
+	, m_PressingSpace{ false }
 {
 	Start();
 }
@@ -22,7 +24,6 @@ Game::Game( const Window& window )
 Game::~Game( )
 {
 	delete m_pBallManager;
-	delete m_pLighter;
 	delete m_pUI;
 }
 
@@ -42,7 +43,7 @@ void Game::Update( float dt )
 		pressedLeft = true;
 	if (pStates[SDL_SCANCODE_RIGHT])
 		pressedRight = true;
-	m_pBallManager->Update(dt, pressedLeft, pressedRight);
+	m_pBallManager->Update(dt, m_DeadlineHeight, pressedLeft, pressedRight);
 }
 
 void Game::Draw() const
@@ -51,21 +52,21 @@ void Game::Draw() const
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	//Center x-axis on screen
-	Rectf vp{ GetViewPort() };
-
 	glPushMatrix();
-	glTranslatef(vp.width / 2, 0.f, 0);
+	glTranslatef(m_Viewport.width / 2, 0.f, 0);
 	glScalef(1.f, 1.f, 1.f);
 	//#############
 
 	m_pBallManager->Draw();
-	//m_pLighter->Draw();
 
 	//#############
 	glPopMatrix();
 
+	//Draw UI
 	float percOfLastLifeRemaining{ (m_TimeToLoseSingleLife - m_TimeSinceLastPress) / m_TimeToLoseSingleLife };
 	m_pUI->Draw(m_Score, m_Lives, m_MaxLives, percOfLastLifeRemaining);
+
+	DrawDeadline();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
@@ -74,25 +75,32 @@ void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 	{
 	case SDLK_SPACE:
 	{
+		if (m_PressingSpace)
+			return;
+		m_PressingSpace = true;
+		std::cout << "Space" << std::endl;
 		m_TimeSinceLastPress = 0.f;
 		m_pBallManager->Click();
 		const BallManager::HitData& hitData{ m_pBallManager->GetHitData() };
-		if (hitData.completed)
-			IncreaseScore(hitData.score);
-		else
-			DecreaseLives(1);
+		//if (hitData.completed)
+		IncreaseScore(hitData.totalBallScore);
+		//else
+		//	DecreaseLives(1);
 		break;
 	}
-	case SDLK_UP:
-		m_pLighter->IncreaseSize();
-		break;
-	case SDLK_DOWN:
-		m_pLighter->DecreaseSize();
 	}
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 {
+	switch (e.keysym.sym)
+	{
+	case SDLK_SPACE:
+	{
+		m_PressingSpace = false;
+		break;
+	}
+	}
 }
 
 void Game::ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e )
@@ -146,9 +154,7 @@ void Game::Start()
 	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height}, 200.f);
 	m_pBallManager->Start();
 
-	if (m_pLighter)
-		delete m_pLighter;
-	m_pLighter = new Lighter(Point2f{ 0.f, GetViewPort().height * 0.3f }, m_pBallManager->GetBallSizes());
+	m_DeadlineHeight = m_pUI->GetHeight() + m_pBallManager->GetBallSizes()[0];
 }
 
 void Game::IncreaseScore(int addedScore)
@@ -161,4 +167,15 @@ void Game::DecreaseLives(int numLives)
 	m_Lives -= numLives;
 	if (m_Lives <= 0)
 		Start();
+}
+
+void Game::DrawDeadline() const
+{
+	utils::SetColor(Color4f{ 1.f, 1.f, 1.f, 1.f });
+	utils::DrawLine(Point2f{ 0.f, m_DeadlineHeight }, Point2f{ m_Viewport.width, m_DeadlineHeight });
+
+	float triangleHeight{20.f};
+	float triangleWidth{ 10.f };
+	utils::FillPolygon(std::vector<Point2f>{Point2f{ 0.f, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ triangleHeight, m_DeadlineHeight }, Point2f{ 0.f,m_DeadlineHeight - triangleWidth * 0.5f }});
+	utils::FillPolygon(std::vector<Point2f>{Point2f{ m_Viewport.width, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ m_Viewport.width - triangleHeight, m_DeadlineHeight }, Point2f{ m_Viewport.width,m_DeadlineHeight - triangleWidth * 0.5f }});
 }

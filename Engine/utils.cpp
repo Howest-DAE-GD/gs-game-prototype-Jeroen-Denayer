@@ -5,11 +5,67 @@
 #include <iostream>
 #include "utils.h"
 
+Color4f utils::glGlobalColor{ 1.f, 1.f, 1.f, 1.f };
+bool utils::glUseGlobalColor{ false };
+bool utils::glUseGlobalAlpha{ false };
 
 #pragma region OpenGLDrawFunctionality
-void utils::SetColor( const Color4f& color )
+void utils::SetColor( const Color4f& color, bool forceColor, bool forceAlpha)
 {
-	glColor4f( color.r, color.g, color.b, color.a );
+	if (glUseGlobalColor && !forceColor)
+		return;
+	
+	float alpha{ glUseGlobalAlpha && !forceAlpha ? glGlobalColor.a : color.a };
+	glColor4f(color.r, color.g, color.b, alpha);
+}
+
+void utils::SetColor(const Color3f& color, float alpha, bool forceColor, bool forceAlpha)
+{
+	if (glUseGlobalColor && !forceColor)
+		return;
+	
+	alpha = glUseGlobalAlpha && !forceAlpha ? glGlobalColor.a : alpha;
+	glColor4f(color.r, color.g, color.b, alpha);
+}
+
+void utils::SetGlobalAlpha(float alpha)
+{
+	glUseGlobalAlpha = true;
+	glGlobalColor.a = alpha;
+}
+
+void utils::UseGlobalAlpha(bool useGlobalAlpha)
+{
+	glUseGlobalAlpha = useGlobalAlpha;
+}
+
+void utils::UseGlobalColorAndAlpha(bool useGlobalColorAndAlpha)
+{
+	glUseGlobalColor = useGlobalColorAndAlpha;
+	glUseGlobalAlpha = useGlobalColorAndAlpha;
+}
+
+void utils::SetGlobalColorAndAlpha(const Color4f& color)
+{
+	glUseGlobalColor = true;
+	glUseGlobalAlpha = true;
+	glGlobalColor.r = color.r;
+	glGlobalColor.g = color.g;
+	glGlobalColor.b = color.b;
+	glGlobalColor.a = color.a;
+}
+
+void utils::SetGlobalColor(const Color3f& color)
+{
+	glUseGlobalColor = true;
+	glGlobalColor.r = color.r;
+	glGlobalColor.g = color.g;
+	glGlobalColor.b = color.b;
+}
+
+void utils::UseGlobalColor(bool useGlobalColor)
+{
+	glUseGlobalColor = useGlobalColor;
 }
 
 void utils::DrawPoint( float x, float y, float pointSize )
@@ -214,6 +270,63 @@ void utils::DrawArc( float centerX, float centerY, float radX, float radY, float
 void utils::DrawArc( const Point2f& center, float radX, float radY, float fromAngle, float tillAngle, float lineWidth )
 {
 	DrawArc( center.x, center.y, radX, radY, fromAngle, tillAngle, lineWidth );
+}
+
+void utils::DrawArcBand(const Point2f center, float innerRad, float outerRad, float fromAngle, float tillAngle, float lineWidth)
+{
+	if (fromAngle > tillAngle)
+	{
+		return;
+	}
+
+	float dAngleInner{ float(g_Pi / innerRad) };
+	float dAngleOuter{ float(g_Pi / outerRad) };
+
+	glLineWidth(lineWidth);
+	glBegin(GL_LINE_STRIP);
+	{
+		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
+		for (float angle = fromAngle; angle < tillAngle; angle += dAngleInner)
+		{
+			glVertex2f(center.x + innerRad * cos(angle), center.y + innerRad * sin(angle));
+		}
+		glVertex2f(center.x + innerRad * cos(tillAngle), center.y + innerRad * sin(tillAngle));
+		glVertex2f(center.x + outerRad * cos(tillAngle), center.y + outerRad * sin(tillAngle));
+		for (float angle = tillAngle; angle > fromAngle; angle -= dAngleOuter)
+		{
+			glVertex2f(center.x + outerRad * cos(angle), center.y + outerRad * sin(angle));
+		}
+		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
+	}
+	glEnd();
+}
+
+void utils::FillArcBand(const Point2f center, float innerRad, float outerRad, float fromAngle, float tillAngle)
+{
+	if (fromAngle > tillAngle)
+	{
+		return;
+	}
+
+	float dAngleInner{ float(g_Pi / innerRad) };
+	float dAngleOuter{ float(g_Pi / outerRad) };
+
+	glBegin(GL_POLYGON);
+	{
+		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
+		for (float angle = fromAngle; angle < tillAngle; angle += dAngleInner)
+		{
+			glVertex2f(center.x + innerRad * cos(angle), center.y + innerRad * sin(angle));
+		}
+		glVertex2f(center.x + innerRad * cos(tillAngle), center.y + innerRad * sin(tillAngle));
+		glVertex2f(center.x + outerRad * cos(tillAngle), center.y + outerRad * sin(tillAngle));
+		for (float angle = tillAngle; angle > fromAngle; angle -= dAngleOuter)
+		{
+			glVertex2f(center.x + outerRad * cos(angle), center.y + outerRad * sin(angle));
+		}
+		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
+	}
+	glEnd();
 }
 
 void utils::FillArc( float centerX, float centerY, float radX, float radY, float fromAngle, float tillAngle )

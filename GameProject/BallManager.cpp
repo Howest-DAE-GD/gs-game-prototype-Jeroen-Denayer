@@ -3,7 +3,8 @@
 #include "Ball.h"
 #include "CatchMechanism.h"
 #include "SingleClick.h"
-#include "Rotation.h"
+#include "SetRotationGame.h"
+#include "SelectColorGame.h"
 
 BallManager::BallManager(Point2f startPos, float ballSize)
 	: m_Pos{ startPos }
@@ -29,6 +30,8 @@ BallManager::~BallManager()
 void BallManager::Start()
 {
 	m_Active = true;
+	CreateNewBall(true);
+	CreateNewBall();
 }
 
 void BallManager::Draw() const
@@ -37,15 +40,11 @@ void BallManager::Draw() const
 	{
 		Ball* pBall{ m_pBalls[i] };
 		if (pBall)
-		{
-			//if (i == m_FirstBallIdx)
-			//	pBall->m_Color = Color4f{ 0.192f, 0.592f, 0.82f, 1.f };
 			pBall->Draw();
-		}
 	}
 }
 
-void BallManager::Update(float dt, bool pressedLeft, bool pressedRight)
+void BallManager::Update(float dt, float deadlineHeight, bool pressedLeft, bool pressedRight)
 {
 	if (!m_Active)
 		return;
@@ -53,25 +52,10 @@ void BallManager::Update(float dt, bool pressedLeft, bool pressedRight)
 	//Update existing balls
 	for (Ball* pBall : m_pBalls)
 		if (pBall)
-			pBall->Update(dt, pressedLeft, pressedRight);
+			pBall->Update(dt, deadlineHeight, pressedLeft, pressedRight);
 
-	//Check if first ball is below the lighter
-	if (m_pBalls[m_FirstBallIdx] && m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Missed)
+	if (m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Completed || m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Missed)
 		SetNextBallActive();
-
-	//Spawn new ball
-	m_TimeToNextballSpawn -= dt;
-	if (m_TimeToNextballSpawn <= 0.f)
-	{
-		//If there is no ball raedy, activate it
-		if (!m_pBalls[m_LastBallIdx])
-			CreateNewBall();
-		//activate the ball
-		m_pBalls[m_LastBallIdx]->SetState(Ball::State::Active);
-
-		//Already create the next ball
-		CreateNewBall();
-	}
 }
 
 void BallManager::Click()
@@ -79,9 +63,6 @@ void BallManager::Click()
 	Ball* pBall{ m_pBalls[m_FirstBallIdx] };
 	pBall->Click();
 	SetHitData();
-
-	if (pBall->m_State == Ball::State::Completed || pBall->m_State == Ball::State::Missed)
-		SetNextBallActive();
 }
 
 const std::vector<float>& BallManager::GetBallSizes()
@@ -94,26 +75,37 @@ const BallManager::HitData& BallManager::GetHitData() const
 	return m_HitData;
 }
 
-void BallManager::CreateNewBall()
+void BallManager::CreateNewBall(bool activate)
 {
-	int newBallIdx{ int((m_LastBallIdx + 1) % m_pBalls.size()) };
+	++m_LastBallIdx %= m_pBalls.size();
 	//If the next ball should be placed where the first ball is then return because the first ball should not be deleted
-	if (newBallIdx == m_FirstBallIdx && m_pBalls[m_FirstBallIdx])
+	if (m_LastBallIdx == m_FirstBallIdx && m_pBalls[m_FirstBallIdx])
 		return;
 
 	//Remove old ball if it exists
-	if (m_pBalls[newBallIdx])
-		delete m_pBalls[newBallIdx];
+	if (m_pBalls[m_LastBallIdx])
+		delete m_pBalls[m_LastBallIdx];
 
 	int ballSizeIdx{ int(rand() % m_BallSizes.size()) };
-	float ballSize{ m_BallSizes[ballSizeIdx] };
-	int score{ ballSizeIdx + 1 };
+	float ballSize{ m_BallSizes[0] };
 
-	MiniGame* pMiniGame{ new Rotation() };
-	m_pBalls[newBallIdx] = new Ball(ballSize, m_Pos.y, 100.f, score, pMiniGame);
-	++m_LastBallIdx %= m_pBalls.size();
+	MiniGame* pMiniGame{};
+	int typeIdx{ rand() % 2 };
+	switch (MiniGame::Type(typeIdx))
+	{
+	case MiniGame::Type::SelectColor:
+		pMiniGame = new SelectColorGame();
+		break;
+	case MiniGame::Type::SetRotation:
+		pMiniGame = new SetRotationGame();
+		break;
+	}
 
-	m_TimeToNextballSpawn = m_pBalls[m_LastBallIdx]->m_TimeToSolve;
+	m_pBalls[m_LastBallIdx] = new Ball(ballSize, m_Pos, 100.f, pMiniGame);
+	if (activate)
+		m_pBalls[m_LastBallIdx]->SetState(Ball::State::Active);
+
+	//m_TimeToNextballSpawn = m_pBalls[m_LastBallIdx]->m_TimeToSolve;
 }
 
 void BallManager::SetNextBallActive()
@@ -128,9 +120,12 @@ void BallManager::SetNextBallActive()
 void BallManager::SetHitData()
 {
 	Ball* pBall{ m_pBalls[m_FirstBallIdx] };
-	m_HitData.completed = pBall->m_State == Ball::State::Completed;
-	if (m_HitData.completed)
+	if (pBall->m_State == Ball::State::Completed)
 	{
-		m_HitData.score = pBall->m_Points;
+		m_HitData.totalBallScore = pBall->GetPoints();
+	}
+	else
+	{
+		m_HitData.totalBallScore = 0;
 	}
 }

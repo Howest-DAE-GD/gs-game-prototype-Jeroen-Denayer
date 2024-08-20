@@ -9,19 +9,18 @@ class Ball
 public:
 	enum class State
 	{
-		Idle, Active, Caught, Missed, Completed
+		Idle, Active, Completed, Missed
 	};
 
-	Ball(float size, float yPos, float speed, int points, MiniGame* pMiniGame);
+	Ball(float size, const Point2f&, float speed, MiniGame* pMiniGame);
 	~Ball();
 
 	void Draw() const;
-	void Update(float dt, bool pressedLeft, bool pressedRight);
+	void Update(float dt, float deadlineHeight, bool pressedLeft, bool pressedRight);
 	void Click();
 
+	int GetPoints() const;
 	float GetTimeToSolve() const;
-	float GetYPos() const;
-	float GetRadius() const;
 private:
 	//Functions
 	void SetState(State newState);
@@ -30,7 +29,7 @@ private:
 	State m_State;
 	int m_Points;
 	float m_Rad;
-	float m_YPos;
+	Point2f m_Pos;
 	float m_Speed;
 	float m_TimeToSolve;
 	float m_TimeSinceCompletion;

@@ -41,8 +41,20 @@ Rectf::Rectf( float left, float bottom, float width, float height )
 }
 
 //-----------------------------------------------------------------
-// Color4f Constructors
+// Color Constructors
 //-----------------------------------------------------------------
+Color3f::Color3f()
+	:Color3f{0.f, 0.f, 0.f}
+{
+}
+
+Color3f::Color3f(float r, float g, float b)
+	:r{ r }
+	,g{ g }
+	,b{ b }
+{
+}
+
 Color4f::Color4f( )
 	:Color4f{ 0.0f, 0.0f, 0.0f, 1.0f }
 {
