@@ -110,7 +110,7 @@ void SelectColorGame::Init(bool activate)
 
 	m_SelectorRotSpeed = m_SelectorRotDir * s_SelectorRotSpeedPerDifficulty[m_Difficulty];
 
-	m_NumUsedColorRegions = rand() % (m_MaxNumColorRegions - m_MinNumColorRegions) + m_MinNumColorRegions;
+	m_NumUsedColorRegions = rand() % (m_MaxNumColorRegions - m_MinNumColorRegions + 1) + m_MinNumColorRegions;
 	float angleOffset{ float(rand() % 360) };
 	float angleStep{ 360.f / m_MaxNumColorRegions };
 	for (int i{}; i < m_NumUsedColorRegions; ++i)

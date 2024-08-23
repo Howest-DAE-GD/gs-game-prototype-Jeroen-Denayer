@@ -18,9 +18,12 @@ private:
 		float startAngle;
 		float endAngle;
 		bool isOpen;
-		bool closeAfterOpen;
 		bool bounceBackWhenClosed;
 	};
+
+	//Functions
+	bool IsSelectorPastAngle(float angle) const;
+	bool SelectorOverlapsGate(const Gate& gate) const;
 
 	//Members
 	int m_MaxNumGates;
@@ -34,5 +37,12 @@ private:
 
 	float m_SelectorAngle;
 	float m_SelectorRotSpeed;
+	int m_SelectorNextGateIdx;
+
+	static float s_FinishArcLength;
+	static std::vector<float> s_GateArcLength;
+	static std::vector<int> s_StartEmptyArcLength;
+	static std::vector<int> s_MinAngleBetweenGates;
+	static std::vector<int> s_MaxAngleBetweenGates;
 };
 

@@ -1,6 +1,14 @@
 #include "pch.h"
 #include "Spiral.h"
 
+void Spiral::DrawLineOnSpiral(const DrawInfo& info, float angle, float lineWidth)
+{
+	SpiralAngleInfo angleInfo{ Spiral::GetSpiralAngleInfo(info, utils::Radians(angle)) };
+	Point2f p0{ info.center.x + angleInfo.outerRad * std::cosf(utils::Radians(angle)), info.center.y + angleInfo.outerRad * std::sinf(utils::Radians(angle)) };
+	Point2f p1{ info.center.x + angleInfo.innerRad * std::cosf(utils::Radians(angle)), info.center.y + angleInfo.innerRad * std::sinf(utils::Radians(angle)) };
+	utils::DrawLine(p0, p1, lineWidth);
+}
+
 void Spiral::DrawSpiralVertices(const Point2f& center, float startRad, float endRad, float startAngle, float endAngle)
 {
 	bool clockWise{ endAngle > startAngle ? false : true };
@@ -119,7 +127,7 @@ void Spiral::DrawFilledSpiral(const DrawInfo& info, const DrawRadInfo& radInfo)
 void Spiral::DrawPartialSpiralBoundary(const DrawInfo& info, float startAngle, float endAngle, float lineWidth)
 {
 	DrawInfo partialInfo{ GetPartialSpiralDrawInfo(info, startAngle, endAngle) };
-	DrawRadInfo radInfo{ GetDrawRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, Spiral::DrawMode::centered) };
+	DrawRadInfo radInfo{ GetDrawRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, DrawMode::centered) };
 	DrawSpiralBoundary(partialInfo, radInfo, lineWidth);
 }
 
@@ -132,37 +140,8 @@ void Spiral::DrawPartiallyFilledSpiral(const DrawInfo& info, float startAngle, f
 
 Spiral::DrawInfo Spiral::GetPartialSpiralDrawInfo(const DrawInfo& info, float startAngle, float endAngle)
 {
-	////clamp startAngle/endAngle to the spiral
-	//float minAngle{ std::min(info.startAngle, info.endAngle) };
-	//float maxAngle{ std::max(info.startAngle, info.endAngle) };
-	//if (startAngle < minAngle)
-	//	startAngle = minAngle;
-	//else if (startAngle > maxAngle)
-	//	startAngle = maxAngle;
-	//if (endAngle < minAngle)
-	//	endAngle = minAngle;
-	//else if (endAngle > maxAngle)
-	//	endAngle = maxAngle;
-
-	////calculate how far the startAngle/endAngle are in the spiral
-	//float startPercOfSpiral{ std::abs(startAngle - info.startAngle) / std::abs(info.endAngle - info.startAngle) };
-	//float endPercOfSpiral{ std::abs(endAngle - info.startAngle) / std::abs(info.endAngle - info.startAngle) };
-
-	////calculate the start/end center radius for the spiral
-	//DrawRadInfo radInfo{ GetDrawRadInfo(info.startRad, info.endRad, info.startWidth, info.endWidth, info.drawMode) };
-	//float startCenterRad{ radInfo.startInner + 0.5f * (radInfo.startOuter - radInfo.startInner) };
-	//float endCenterRad{ radInfo.endInner + 0.5f * (radInfo.endOuter - radInfo.endInner) };
-
-	////calculate the radius and width at startAngle/endAngle of the spiral
-	//float startRad{ startCenterRad + startPercOfSpiral * (endCenterRad - startCenterRad) };
-	//float endRad{ startCenterRad + endPercOfSpiral * (endCenterRad - startCenterRad) };
-	//float startWidth{ info.startWidth + startPercOfSpiral * (info.endWidth - info.startWidth) };
-	//float endWidth{ info.startWidth + endPercOfSpiral * (info.endWidth - info.startWidth) };
-
 	SpiralAngleInfo startAngleInfo{ GetSpiralAngleInfo(info, startAngle) };
 	SpiralAngleInfo endAngleInfo{ GetSpiralAngleInfo(info, endAngle) };
-
-	//return DrawInfo{ info.center, startRad, endRad, startAngle, endAngle, startWidth, endWidth, info.drawMode};
 	return DrawInfo{ info.center, startAngleInfo.centerRad, endAngleInfo.centerRad, startAngle, endAngle, startAngleInfo.width, endAngleInfo.width, DrawMode::centered};
 }
 
