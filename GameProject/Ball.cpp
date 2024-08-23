@@ -38,27 +38,29 @@ void Ball::Draw() const
 	utils::UseGlobalAlpha(false);
 }
 
-void Ball::Update(float dt, float deadlineHeight, bool pressedLeft, bool pressedRight)
+void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
 	if (m_State == State::Idle)
 		return;
 
 	m_Pos.y += -m_Speed * dt;
-	if (m_Pos.y + m_Rad < deadlineHeight)
+	if (m_Pos.y + m_Rad < input.deadLineHeight)
 		SetState(State::Missed);
 
 	switch (m_State)
 	{
 	case State::Active:
-		m_pMiniGame->Update(dt, pressedLeft, pressedRight);
+	{
+		m_pMiniGame->Update(dt, input, feedback);
 		if (m_pMiniGame->GetState() == MiniGame::State::Completed)
 		{
-			m_Points += m_pMiniGame->GetPoints();
+			m_Points += feedback.totalPoints;
 			SetState(State::Completed);
 		}
 		else if (m_pMiniGame->GetState() == MiniGame::State::Failed)
 			SetState(State::Missed);
 		break;
+	}
 	case State::Completed: case State::Missed:
 		m_TimeSinceCompletion += dt;
 		float alpha{ (s_FadeTime - m_TimeSinceCompletion) / s_FadeTime };
@@ -67,28 +69,6 @@ void Ball::Update(float dt, float deadlineHeight, bool pressedLeft, bool pressed
 		m_Color.a = alpha;
 		break;
 	}
-}
-
-void Ball::Click()
-{
-	switch (m_State)
-	{
-	case State::Active:
-		m_pMiniGame->Click();
-		if (m_pMiniGame->GetState() == MiniGame::State::Completed)
-		{
-			m_Points += m_pMiniGame->GetPoints();
-			SetState(State::Completed);
-		}
-		else if (m_pMiniGame->GetState() == MiniGame::State::Failed)
-			SetState(State::Missed);
-		break;
-	} 
-}
-
-int Ball::GetPoints() const
-{
-	return m_Points;
 }
 
 float Ball::GetTimeToSolve() const

@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseGame.h"
+#include "GameData.h"
 
 //Forward declarations
 class BallManager;
@@ -30,6 +31,7 @@ public:
 private:
 	//Functions
 	void Start();
+	void CheckFeedback(const GameData::Feedback& feedback);
 	void IncreaseScore(int addedScore);
 	void DecreaseLives(int numLives);
 	void DrawDeadline() const;
@@ -40,6 +42,8 @@ private:
 	Lighter* m_pLighter;
 	UI* m_pUI;
 	int m_Score;
+	int m_Difficulty;
+	std::vector<int> m_PointsToIncreaseDifficulty;
 	int m_StartLives;
 	int m_MaxLives;
 	int m_Lives;

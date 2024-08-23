@@ -1,26 +1,31 @@
 #include "pch.h"
 #include "SelectColorGame.h"
+#include "BallManager.h"
 #include <unordered_set>
 
 const std::vector<Color3f> SelectColorGame::s_Colors{
-	Color3f{0.f, 0.392f, 0.f},
-	Color3f{1.f, 0.361f, 0.f}, 
-	Color3f{1.f, 0.843f, 0.f},
-	Color3f{0.78f, 0.082f, 0.522f},
-	Color3f{0.f, 1.f, 0.f},
-	Color3f{0.f, 1.f, 1.f},
-	Color3f{0.f, 0.f, 1.f}
+	Color3f{0.094f, 0.094f, 0.812f}, //dark blue
+	Color3f{0.137f, 0.522f, 0.89f}, //light blue
+	Color3f{0.f, 0.392f, 0.f}, //dark green
+	Color3f{0.192f, 0.722f, 0.192f}, //light green
+	Color3f{0.812f, 0.718f, 0.2f}, //bright yellow
+	Color3f{0.859f, 0.408f, 0.141f},  //orange 
+	Color3f{0.78f, 0.082f, 0.522f}, //pink
 };
 
-SelectColorGame::SelectColorGame()
-	:MiniGame(MiniGame::Type::SelectColor, 3)
+const std::vector<float> SelectColorGame::s_AngleDeviationPerDifficulty{ 30.f, 20.f, 10.f };
+const std::vector<float> SelectColorGame::s_SelectorRotSpeedPerDifficulty{ 180.f, 180.f, 210.f };
+
+SelectColorGame::SelectColorGame(int difficulty)
+	:MiniGame(MiniGame::Type::SelectColor, difficulty, 2, 3)
 	, m_ValidColorIdx{}
 	, m_MaxNumColorRegions{ 4 }
 	, m_MinNumColorRegions{ 2 }
 	, m_NumUsedColorRegions{}
 	, m_ColorRegions{ std::vector<ColorRegion>(m_MaxNumColorRegions) }
 	, m_SelectorAngle{ float(rand() % 360) }
-	, m_SelectorRotSpeed{ 180.f * (rand() % 2 == 0 ? 1 : -1) }
+	, m_SelectorRotSpeed{}
+	, m_SelectorRotDir{ rand() % 2 == 0 ? 1 : -1 }
 {
 	Init();
 }
@@ -48,15 +53,22 @@ void SelectColorGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 	utils::DrawLine(p0, p1, 3.f);
 }
 
-void SelectColorGame::Update(float dt, bool pressedLeft, bool pressedRight)
+void SelectColorGame::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
 	if (m_State == State::Idle)
 		return;
 
+	if (input.pressedSpace)
+		Click(feedback);
+
 	m_SelectorAngle += m_SelectorRotSpeed * dt;
+	if (m_SelectorRotSpeed > 0.f && m_SelectorAngle > 360.f)
+		m_SelectorAngle = 0.f;
+	else if (m_SelectorAngle < 0.f)
+		m_SelectorAngle = 360.f;
 }
 
-void SelectColorGame::Click()
+void SelectColorGame::Click(GameData::Feedback& feedback)
 {
 	bool hitRegion{ false };
 	for (int i{}; i < m_NumUsedColorRegions; ++i)
@@ -74,22 +86,28 @@ void SelectColorGame::Click()
 	if (hitRegion)
 	{
 		++m_Points;
-		Init();
+		if (m_NumPlaythroughs != m_NumPlaythroughsToComplete)
+			Init();
+		else
+		{
+			feedback.totalPoints = m_Points;
+			m_State = State::Completed;
+			return;
+		}
 	}
 	else
+	{
+		feedback.lostLife = true;
 		m_State = State::Failed;
+	}
 }
 
 void SelectColorGame::Init(bool activate)
 {
-	if (m_NumPlaythroughs == m_NumPlaythroughsToComplete)
-	{
-		m_State = State::Completed;
-		return;
-	}
-
 	std::unordered_set<int> colorIndicesUsed{};
 	std::unordered_set<int> usedAngles{};
+
+	m_SelectorRotSpeed = m_SelectorRotDir * s_SelectorRotSpeedPerDifficulty[m_Difficulty];
 
 	m_NumUsedColorRegions = rand() % (m_MaxNumColorRegions - m_MinNumColorRegions) + m_MinNumColorRegions;
 	float angleOffset{ float(rand() % 360) };
@@ -113,7 +131,7 @@ void SelectColorGame::Init(bool activate)
 		m_ColorRegions[i].activated = false;
 		m_ColorRegions[i].colorIdx = colorIdx;
 		m_ColorRegions[i].angle = angleIdx * angleStep + angleOffset;
-		m_ColorRegions[i].angleDeviation = float(rand() % 21 + 10);
+		m_ColorRegions[i].angleDeviation = s_AngleDeviationPerDifficulty[m_Difficulty];
 	}
 
 	m_ValidColorIdx = m_ColorRegions[rand() % m_NumUsedColorRegions].colorIdx;

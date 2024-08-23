@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include "utils.h"
+#include <functional>
 
 Color4f utils::glGlobalColor{ 1.f, 1.f, 1.f, 1.f };
 bool utils::glUseGlobalColor{ false };
@@ -272,59 +273,147 @@ void utils::DrawArc( const Point2f& center, float radX, float radY, float fromAn
 	DrawArc( center.x, center.y, radX, radY, fromAngle, tillAngle, lineWidth );
 }
 
-void utils::DrawArcBand(const Point2f center, float innerRad, float outerRad, float fromAngle, float tillAngle, float lineWidth)
+void utils::DrawArcBand(const Point2f& center, float innerRad, float outerRad, float fromAngle, float tillAngle, float lineWidth)
 {
-	if (fromAngle > tillAngle)
+	float rad{ innerRad + 0.5f * (outerRad - innerRad) };
+	float width{ outerRad - innerRad };
+	DrawSpiralBand(center, rad, rad, fromAngle, tillAngle, width, width, 0, lineWidth);
+}
+
+void utils::FillArcBand(const Point2f& center, float innerRad, float outerRad, float fromAngle, float tillAngle)
+{
+	float rad{ innerRad + 0.5f * (outerRad - innerRad) };
+	float width{ outerRad - innerRad };
+	FillSpiralBand(center, rad, rad, fromAngle, tillAngle, width, width, 0);
+}
+
+void utils::DrawSpiralVertices(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle)
+{
+	bool clockWise{ tillAngle > fromAngle ? false : true };
+	int loopDir{ clockWise ? -1 : 1 };
+
+	auto isSmaller{ [](float a, float b) -> bool {
+		return a < b;
+	} };
+	auto isLarger{ [](float a, float b) -> bool {
+	return a > b;
+	} };
+
+	auto condition = [clockWise, isSmaller, isLarger](float a, float b) -> bool {
+		return clockWise ? isLarger(a, b) : isSmaller(a, b);
+	};
+
+	float dAngle{ startRad == 0.f ? g_Pi / 2.f : float(g_Pi / startRad) };
+	float percOfSpiral{ 0.f };
+	for (float angle{ fromAngle }; condition(angle, tillAngle); angle += dAngle * loopDir)
 	{
-		return;
+		percOfSpiral = std::abs(angle - fromAngle) / std::abs(tillAngle - fromAngle);
+		float rad{ startRad + percOfSpiral * (endRad - startRad) };
+		glVertex2f(center.x + rad * cos(angle), center.y + rad * sin(angle));
+		dAngle = rad == 0.f ? g_Pi / 2.f : float(g_Pi / rad);
 	}
+	glVertex2f(center.x + endRad * cos(tillAngle), center.y + endRad * sin(tillAngle));
+}
 
-	float dAngleInner{ float(g_Pi / innerRad) };
-	float dAngleOuter{ float(g_Pi / outerRad) };
-
+void utils::DrawSpiral(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle, float lineWidth)
+{
 	glLineWidth(lineWidth);
 	glBegin(GL_LINE_STRIP);
 	{
-		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
-		for (float angle = fromAngle; angle < tillAngle; angle += dAngleInner)
-		{
-			glVertex2f(center.x + innerRad * cos(angle), center.y + innerRad * sin(angle));
-		}
-		glVertex2f(center.x + innerRad * cos(tillAngle), center.y + innerRad * sin(tillAngle));
-		glVertex2f(center.x + outerRad * cos(tillAngle), center.y + outerRad * sin(tillAngle));
-		for (float angle = tillAngle; angle > fromAngle; angle -= dAngleOuter)
-		{
-			glVertex2f(center.x + outerRad * cos(angle), center.y + outerRad * sin(angle));
-		}
-		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
+		DrawSpiralVertices(center, startRad, endRad, fromAngle, tillAngle);
 	}
 	glEnd();
 }
 
-void utils::FillArcBand(const Point2f center, float innerRad, float outerRad, float fromAngle, float tillAngle)
+utils::SpiralRadInfo utils::GetSpiralRadInfo(float startRad, float endRad, float startWidth, float endWidth, int mode)
 {
-	if (fromAngle > tillAngle)
+	float minRad{ std::min(startRad, endRad) };
+	float maxRad{ std::max(startRad, endRad) };
+
+	float startHalfWidth{ 0.5f * startWidth };
+	float endHalfWidth{ 0.5f * endWidth };
+
+	float startInnerRad{}, startOuterRad{}, endInnerRad{}, endOuterRad{};
+	if (mode == 0)
 	{
-		return;
+		startInnerRad = std::max(maxRad - startHalfWidth, 0.f);
+		startOuterRad = maxRad + startHalfWidth;
+		endInnerRad = std::max(minRad - endHalfWidth, 0.f);
+		endOuterRad = minRad + endHalfWidth;
+	}
+	else if (mode <= -1)
+	{
+		startInnerRad = std::max(maxRad - startWidth, 0.f);
+		startOuterRad = maxRad;
+		endInnerRad = std::max(minRad - endWidth, 0.f);
+		endOuterRad = minRad;
+	}
+	else if (mode == 1)
+	{
+		startInnerRad = maxRad;
+		startOuterRad = maxRad + startWidth;
+		endInnerRad = minRad;
+		endOuterRad = minRad + endWidth;
+	}
+	else if (mode >= 2)
+	{
+		startInnerRad = maxRad - startWidth;
+		startOuterRad = maxRad;
+		endInnerRad = minRad;
+		endOuterRad = minRad + endWidth;
 	}
 
-	float dAngleInner{ float(g_Pi / innerRad) };
-	float dAngleOuter{ float(g_Pi / outerRad) };
+	return SpiralRadInfo{ minRad, maxRad, startInnerRad, startOuterRad, endInnerRad, endOuterRad };
+}
 
-	glBegin(GL_POLYGON);
+void utils::DrawSpiralBand(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle, float startWidth, float endWidth, int mode, float lineWidth)
+{
+	SpiralRadInfo rad{ GetSpiralRadInfo(startRad, endRad, startWidth, endWidth, mode) };
+
+	glLineWidth(lineWidth);
+	glBegin(GL_LINE_STRIP);
 	{
-		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
-		for (float angle = fromAngle; angle < tillAngle; angle += dAngleInner)
+		glVertex2f(center.x + rad.startInner * cos(fromAngle), center.y + rad.startInner * sin(fromAngle));
+		DrawSpiralVertices(center, rad.startOuter, rad.endOuter, fromAngle, tillAngle);
+		DrawSpiralVertices(center, rad.endInner, rad.startInner, tillAngle, fromAngle);
+	}
+	glEnd();
+}
+
+void utils::FillSpiralBand(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle, float startWidth, float endWidth, int mode)
+{
+	bool clockWise{ tillAngle > fromAngle ? false : true };
+	int loopDir{ clockWise ? -1 : 1 };
+
+	auto isSmaller{ [](float a, float b) -> bool {
+		return a < b;
+	} };
+	auto isLarger{ [](float a, float b) -> bool {
+	return a > b;
+	} };
+
+	auto condition = [clockWise, isSmaller, isLarger](float a, float b) -> bool {
+		return clockWise ? isLarger(a, b) : isSmaller(a, b);
+		};
+
+	SpiralRadInfo rad{ GetSpiralRadInfo(startRad, endRad, startWidth, endWidth, mode) };
+
+	float startHalfWidth{ 0.5f * startWidth };
+	float endHalfWidth{ 0.5f * endWidth };
+
+	glBegin(GL_TRIANGLE_STRIP);
+	{
+		float percOfSpiral{ 0.f };
+		float dAngle{ float(g_Pi / startRad) };
+		for (float angle{ fromAngle }; condition(angle, tillAngle); angle += dAngle * loopDir)
 		{
-			glVertex2f(center.x + innerRad * cos(angle), center.y + innerRad * sin(angle));
-		}
-		glVertex2f(center.x + innerRad * cos(tillAngle), center.y + innerRad * sin(tillAngle));
-		glVertex2f(center.x + outerRad * cos(tillAngle), center.y + outerRad * sin(tillAngle));
-		for (float angle = tillAngle; angle > fromAngle; angle -= dAngleOuter)
-		{
+			percOfSpiral = std::abs(angle - fromAngle) / std::abs(tillAngle - fromAngle);
+			float innerRad{ rad.startInner + percOfSpiral * (rad.endInner - rad.startInner) };
+			float outerRad{ rad.startOuter + percOfSpiral * (rad.endOuter - rad.startOuter) };
 			glVertex2f(center.x + outerRad * cos(angle), center.y + outerRad * sin(angle));
+			glVertex2f(center.x + innerRad * cos(angle), center.y + innerRad * sin(angle));
+			dAngle = float(g_Pi / outerRad);
 		}
-		glVertex2f(center.x + outerRad * cos(fromAngle), center.y + outerRad * sin(fromAngle));
 	}
 	glEnd();
 }
@@ -830,7 +919,7 @@ float utils::NormalizeAngle(float angle)
 		angle = int(angle) % 360 + (angle - int(angle));
 
 	if (negative)
-		angle = 360.f - angle;
+		angle = 360.f + angle;
 
 	return angle;
 }

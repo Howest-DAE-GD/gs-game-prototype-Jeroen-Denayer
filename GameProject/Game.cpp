@@ -10,6 +10,8 @@ Game::Game( const Window& window )
 	, m_pLighter{ nullptr }
 	, m_pUI{ new UI(m_Viewport) }
 	, m_Score{ 0 }
+	, m_Difficulty{ 0 }
+	, m_PointsToIncreaseDifficulty{ std::vector<int>{5, 10, 15} }
 	, m_StartLives{ 5 }
 	, m_MaxLives{ m_StartLives }
 	, m_Lives{ m_StartLives }
@@ -38,12 +40,28 @@ void Game::Update( float dt )
 
 	// Check keyboard state
 	const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
-	bool pressedLeft{}, pressedRight{};
+	GameData::Input input{};
 	if (pStates[SDL_SCANCODE_LEFT])
-		pressedLeft = true;
+		input.pressedLeft = true;
 	if (pStates[SDL_SCANCODE_RIGHT])
-		pressedRight = true;
-	m_pBallManager->Update(dt, m_DeadlineHeight, pressedLeft, pressedRight);
+		input.pressedRight = true;
+	if (pStates[SDL_SCANCODE_SPACE])
+	{
+		if (!m_PressingSpace)
+		{
+			m_TimeSinceLastPress = 0.f;
+			m_PressingSpace = true;
+			input.pressedSpace = true;
+		}
+	}
+	else
+	{
+		m_PressingSpace = false;
+	}
+	input.deadLineHeight = m_DeadlineHeight;
+	GameData::Feedback feedback{};
+	m_pBallManager->Update(dt, input, feedback);
+	CheckFeedback(feedback);
 }
 
 void Game::Draw() const
@@ -71,36 +89,13 @@ void Game::Draw() const
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
-	switch (e.keysym.sym)
-	{
-	case SDLK_SPACE:
-	{
-		if (m_PressingSpace)
-			return;
-		m_PressingSpace = true;
-		std::cout << "Space" << std::endl;
-		m_TimeSinceLastPress = 0.f;
-		m_pBallManager->Click();
-		const BallManager::HitData& hitData{ m_pBallManager->GetHitData() };
-		//if (hitData.completed)
-		IncreaseScore(hitData.totalBallScore);
-		//else
-		//	DecreaseLives(1);
-		break;
-	}
-	}
+	//switch (e.keysym.sym)
+	//{
+	//}
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 {
-	switch (e.keysym.sym)
-	{
-	case SDLK_SPACE:
-	{
-		m_PressingSpace = false;
-		break;
-	}
-	}
 }
 
 void Game::ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e )
@@ -151,15 +146,30 @@ void Game::Start()
 
 	if (m_pBallManager)
 		delete m_pBallManager;
-	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height}, 200.f);
+	float ballSize{ 200.f };
+	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height + ballSize }, ballSize);
 	m_pBallManager->Start();
 
 	m_DeadlineHeight = m_pUI->GetHeight() + m_pBallManager->GetBallSizes()[0];
 }
 
+void Game::CheckFeedback(const GameData::Feedback& feedback)
+{
+	if (feedback.lostLife)
+		DecreaseLives(1);
+	if (feedback.totalPoints != 0)
+		IncreaseScore(feedback.totalPoints);
+}
+
 void Game::IncreaseScore(int addedScore)
 {
 	m_Score += addedScore;
+
+	if (m_Score > m_PointsToIncreaseDifficulty[std::min(m_Difficulty, int(m_PointsToIncreaseDifficulty.size() - 1))])
+	{
+		++m_Difficulty;
+		m_pBallManager->IncreaseDifficulty();
+	}
 }
 
 void Game::DecreaseLives(int numLives)

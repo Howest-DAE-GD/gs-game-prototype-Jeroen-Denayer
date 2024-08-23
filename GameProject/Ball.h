@@ -1,4 +1,5 @@
 #pragma once
+#include "GameData.h"
 
 //Forward declarations
 class BallManager;
@@ -12,14 +13,14 @@ public:
 		Idle, Active, Completed, Missed
 	};
 
+
+
 	Ball(float size, const Point2f&, float speed, MiniGame* pMiniGame);
 	~Ball();
 
 	void Draw() const;
-	void Update(float dt, float deadlineHeight, bool pressedLeft, bool pressedRight);
-	void Click();
+	void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback);
 
-	int GetPoints() const;
 	float GetTimeToSolve() const;
 private:
 	//Functions

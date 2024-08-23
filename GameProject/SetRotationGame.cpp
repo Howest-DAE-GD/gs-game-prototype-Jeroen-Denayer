@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "SetRotationGame.h"
+#include "BallManager.h"
 
-SetRotationGame::SetRotationGame()
-	:MiniGame(MiniGame::Type::SetRotation, 3)
+const std::vector<float> SetRotationGame::s_AngleDeviationPerDifficulty{ 30.f, 20.f, 10.f };
+
+SetRotationGame::SetRotationGame(int difficulty)
+	:MiniGame(MiniGame::Type::SetRotation, difficulty, 2, 3)
 	, m_ValidAngle{}
 	, m_ValidAngleDeviation{}
 	, m_SelectorAngle{}
@@ -37,18 +40,20 @@ void SetRotationGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 	utils::DrawLine(lineStart, lineEnd, 2.f);
 }
 
-void SetRotationGame::Update(float dt, bool pressedLeft, bool pressedRight)
+void SetRotationGame::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
 	if (m_State == State::Idle)
 		return;
-	std::cout << m_Points << std::endl;
-	if (pressedLeft)
+
+	if (input.pressedSpace)
+    	Click(feedback);
+	if (input.pressedLeft)
 	{
 		m_SelectorAngle += m_SelectorRotSpeed * dt;
 		if (m_SelectorAngle > 360)
 			m_SelectorAngle = 0.f;
 	}
-	if (pressedRight)
+	if (input.pressedRight)
 	{
 		m_SelectorAngle -= m_SelectorRotSpeed * dt;
 		if (m_SelectorAngle < 0.f)
@@ -56,25 +61,29 @@ void SetRotationGame::Update(float dt, bool pressedLeft, bool pressedRight)
 	}
 }
 
-void SetRotationGame::Click()
+void SetRotationGame::Click(GameData::Feedback& feedback)
 {
 	if (utils::SmallestAngleBetween2Angles(m_SelectorAngle, m_ValidAngle) < m_ValidAngleDeviation)
 	{
 		++m_Points;
-		Init();
+		if (m_NumPlaythroughs != m_NumPlaythroughsToComplete)
+			Init();
+		else
+		{
+			feedback.totalPoints = m_Points;
+			m_State = State::Completed;
+			return;
+		}
 	}
 	else
+	{
+		feedback.lostLife = true;
 		m_State = State::Failed;
+	}
 }
 
 void SetRotationGame::Init(bool activate)
 {
-	if (m_NumPlaythroughs == m_NumPlaythroughsToComplete)
-	{
-		m_State = State::Completed;
-		return;
-	}
-
 	if (m_NumPlaythroughs == 0)
 	{
 		m_ValidAngle = float(rand() % 360);
@@ -86,12 +95,12 @@ void SetRotationGame::Init(bool activate)
 	else
 	{
 		//Set the new angle to be min 60 degrees from the current selector pos.
-		float minAngleDeviation{ 60.f };
+		float minAngleDiff{ 60.f };
 		int sign{ rand() % 2 == 0 ? 1 : -1 };
-		m_ValidAngle = utils::NormalizeAngle(m_ValidAngle + sign * (rand() % int(180 - minAngleDeviation) + minAngleDeviation));
+		m_ValidAngle = utils::NormalizeAngle(m_ValidAngle + sign * (rand() % int(180 - minAngleDiff) + minAngleDiff));
 	}
 
-	m_ValidAngleDeviation = float(rand() % 21 + 10);
+	m_ValidAngleDeviation = s_AngleDeviationPerDifficulty[m_Difficulty];
 
 	++m_NumPlaythroughs;
 }
