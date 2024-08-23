@@ -82,14 +82,15 @@ void BallManager::CreateNewBall(bool activate)
 	float ballSize{ m_BallSizes[0] };
 
 	MiniGame* pMiniGame{ new SpiralGatesGame(m_Difficulty) };
+	//MiniGame* pMiniGame{};
 	//int typeIdx{ rand() % 2 };
 	//switch (MiniGame::Type(typeIdx))
 	//{
 	//case MiniGame::Type::SelectColor:
-	//	pMiniGame = new SelectColorGame();
+	//	pMiniGame = new SelectColorGame(0);
 	//	break;
 	//case MiniGame::Type::SetRotation:
-	//	pMiniGame = new SetRotationGame();
+	//	pMiniGame = new SetRotationGame(0);
 	//	break;
 	//}
 

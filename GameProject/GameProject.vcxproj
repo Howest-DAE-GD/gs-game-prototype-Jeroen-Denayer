@@ -202,7 +202,7 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="SetRotationGame.cpp" />
     <ClCompile Include="SelectColorGame.cpp" />
-    <ClCompile Include="SpiralBand.cpp" />
+    <ClCompile Include="Spiral.cpp" />
     <ClCompile Include="SpiralGatesGame.cpp" />
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
@@ -215,7 +215,7 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClInclude Include="pch.h" />
     <ClInclude Include="SetRotationGame.h" />
     <ClInclude Include="SelectColorGame.h" />
-    <ClInclude Include="SpiralBand.h" />
+    <ClInclude Include="Spiral.h" />
     <ClInclude Include="SpiralGatesGame.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 #include "MiniGame.h"
-#include "SpiralBand.h"
+#include "Spiral.h"
 
 class SpiralGatesGame
 	:public MiniGame
@@ -23,16 +23,13 @@ private:
 	};
 
 	//Members
-	//TO-DO use SpiralBand in this minigame instead of loose variables
-	SpiralBand m_SpiralBand;
-
 	int m_MaxNumGates;
 	int m_MinNumGates;
 	int m_NumUsedGates;
 	std::vector<Gate> m_Gates;
 	float m_StartAngle;
 	float m_EndAngle;
-	int m_Loops;
+	float m_Loops;
 	int m_SpiralDir;
 
 	float m_SelectorAngle;

@@ -2,6 +2,7 @@
 #include "SelectColorGame.h"
 #include "BallManager.h"
 #include <unordered_set>
+#include "Spiral.h"
 
 const std::vector<Color3f> SelectColorGame::s_Colors{
 	Color3f{0.094f, 0.094f, 0.812f}, //dark blue
@@ -39,7 +40,7 @@ void SelectColorGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 		float fromAngle{ colorRegion.angle - colorRegion.angleDeviation };
 		float tillAngle{ colorRegion.angle + colorRegion.angleDeviation };
 		utils::SetColor(s_Colors[colorRegion.colorIdx]);
-		utils::FillArcBand(pos, innerRad, outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
+		Spiral::DrawFilledArc(pos, innerRad, outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
 	}
 
 	//Draw circle with the correct color that needs to be matched

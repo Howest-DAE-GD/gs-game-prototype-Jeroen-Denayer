@@ -76,25 +76,6 @@ namespace utils
 	// Fills an arc. The angle parameters are in radians, not in degrees.
 	void FillArc(const Point2f& center, float radX, float radY, float fromAngle, float tillAngle);
 
-	void DrawArcBand(const Point2f& center, float innerRad, float outerRad, float fromAngle, float tillAngle, float lineWidth = 1.0f);
-	void FillArcBand(const Point2f& center, float innerRad, float outerRad, float fromAngle, float tillAngle);
-
-	void DrawSpiralVertices(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle);
-	void DrawSpiral(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle, float lineWidth = 1.f);
-	
-	/*
-	Parameters:
-	- mode:
-		0: centers the spiral around startRad/endRad
-		-1: places the spiral on the inside of startRad/endRad
-		1: places the spiral on the outside of startRad/endRad
-		2: the min/max of startRad/endRad are the min/max radii for the spiral
-	*/
-	SpiralRadInfo GetSpiralRadInfo(float startRad, float endRad, float startWidth, float endWidth, int mode = 0);
-
-	void DrawSpiralBand(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle, float startWidth, float endWidth, int mode = 0, float lineWidth = 1.f);
-	void FillSpiralBand(const Point2f& center, float startRad, float endRad, float fromAngle, float tillAngle, float startWidth, float endWidth, int mode = 0);
-
 	void DrawPolygon( const std::vector<Point2f>& vertices, bool closed = true, float lineWidth = 1.0f );
 	void DrawPolygon( const Point2f* pVertices, size_t nrVertices, bool closed = true, float lineWidth = 1.0f );
 	void FillPolygon( const std::vector<Point2f>& vertices);

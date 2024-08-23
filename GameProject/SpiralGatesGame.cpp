@@ -21,26 +21,22 @@ void SpiralGatesGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 {
 	float spiralWidth{ (outerRad - innerRad) / (m_Loops + 1) * 0.9f };
 	utils::SetColor(Color3f{ 0.31f, 0.216f, 0.055f });
-	utils::FillSpiralBand(pos, outerRad, innerRad, utils::Radians(m_StartAngle), utils::Radians(m_EndAngle), spiralWidth, spiralWidth, 2);
-
-	//startInnerRad = maxRad - startWidth;
-	//startOuterRad = maxRad;
-	//endInnerRad = minRad;
-	//endOuterRad = minRad + endWidth;
+	Spiral::DrawInfo drawInfo{ pos, innerRad, outerRad, utils::Radians(m_StartAngle), utils::Radians(m_EndAngle), spiralWidth, spiralWidth, Spiral::DrawMode::extrema };
+	Spiral::DrawFilledSpiral(drawInfo);
 
 	utils::SetColor(Color3f{ 0.741f, 0.537f, 0.204f });
 	for (int i{}; i < m_NumUsedGates; ++i)
 	{
 		const Gate& gate{ m_Gates[i] };
-		float gateStartPercOfSpiral{ std::abs(gate.startAngle - m_StartAngle) / std::abs(m_EndAngle - m_StartAngle) };
-		float gateOuterRad{};
-		float gateInnerRad{};
-		utils::FillSpiralBand(pos, gateOuterRad, gateInnerRad, utils::Radians(gate.startAngle), utils::Radians(gate.endAngle), spiralWidth, spiralWidth, 2);
+		Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(gate.startAngle), utils::Radians(gate.endAngle));
 	}
+
+	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });
 }
 
 void SpiralGatesGame::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
+	m_SelectorAngle += m_SpiralDir * m_SelectorRotSpeed * dt;
 }
 
 void SpiralGatesGame::Click(GameData::Feedback& feedback)
@@ -74,7 +70,7 @@ void SpiralGatesGame::Init(bool activate)
 	angle += m_SpiralDir * 30.f;
 	m_EndAngle = angle;
 
-	m_Loops = std::abs(int((m_EndAngle - m_StartAngle) / 360.f));
+	m_Loops = std::abs((m_EndAngle - m_StartAngle) / 360.f);
 
 	m_SelectorAngle = m_StartAngle;
 }

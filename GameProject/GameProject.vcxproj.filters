@@ -48,7 +48,7 @@
     <ClCompile Include="SpiralGatesGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpiralBand.cpp">
+    <ClCompile Include="Spiral.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,7 +83,7 @@
     <ClInclude Include="SpiralGatesGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpiralBand.h">
+    <ClInclude Include="Spiral.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "BallManager.h"
 #include "UI.h"
+#include "Spiral.h"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
@@ -76,6 +77,14 @@ void Game::Draw() const
 	//#############
 
 	m_pBallManager->Draw();
+	//Point2f pos{ 0.f, m_Viewport.height * 0.5f };
+	//Spiral::DrawInfo drawInfo{ pos, 100.f, 50.f, 0.f,  2 * float(M_PI), 20.f, 10.f, Spiral::DrawMode::extrema };
+	//Spiral::DrawFilledSpiral(drawInfo);
+
+	//utils::SetColor(Color4f{ 0.f, 0.f, 1.f, 1.f });
+	//Spiral::DrawPartiallyFilledSpiral(drawInfo, float(M_PI) / 2.f, float(M_PI));
+	//utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
+	//Spiral::DrawSpiral(pos, 100.f, 50.f, 0.f,  2 * float(M_PI), 2.f);
 
 	//#############
 	glPopMatrix();

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SetRotationGame.h"
 #include "BallManager.h"
+#include "Spiral.h"
 
 const std::vector<float> SetRotationGame::s_AngleDeviationPerDifficulty{ 30.f, 20.f, 10.f };
 
@@ -21,7 +22,7 @@ void SetRotationGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 
 	//Draw the valid angle region
 	utils::SetColor(Color3f{ 0.212f, 0.388f, 0.149f });
-	utils::FillArcBand(pos, innerRad, outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
+	Spiral::DrawFilledArc(pos, innerRad, outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
 
 	//Draw 2 lines to indicate the valid angle region
 	float linePercOfRad{ 0.5f };
