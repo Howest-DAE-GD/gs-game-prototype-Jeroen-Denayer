@@ -1,6 +1,6 @@
 #pragma once
 
-class Spiral
+class Spiral final
 {
 public:
 	/*

@@ -28,16 +28,18 @@ public:
 
 	void Activate();
 	State GetState() const;
+	float GetTimeToComplete() const;
 protected:
-	MiniGame(Type type, int difficulty, int maxDifficulty, int numPlaythroughsToComplete = 1);
+	MiniGame(Type type, int difficulty, int maxDifficulty);
+	
+	virtual void ConfigureDifficulty(int difficulty) = 0;
+	virtual void CalculateTimeToComplete() = 0;
 
 	Type m_Type;
 	State m_State;
 	int m_MaxDifficulty;
 	int m_Difficulty;
 	int m_Points;
-	int m_NumPlaythroughs;
-	int m_NumPlaythroughsToComplete;
 	float m_MaxTimeToComplete;
 };
 

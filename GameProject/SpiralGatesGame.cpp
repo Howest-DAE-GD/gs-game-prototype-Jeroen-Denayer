@@ -3,12 +3,12 @@
 
 float SpiralGatesGame::s_FinishArcLength{ 30.f };
 std::vector<float> SpiralGatesGame::s_GateArcLength{ 40.f, 30.f, 20.f };
-std::vector<int> SpiralGatesGame::s_StartEmptyArcLength{ 90, 60, 45 };
+std::vector<int> SpiralGatesGame::s_StartEmptyArcLength{ 120, 90, 60 };
 std::vector<int> SpiralGatesGame::s_MinAngleBetweenGates{ 60, 40, 20 };
 std::vector<int> SpiralGatesGame::s_MaxAngleBetweenGates{ 120, 120, 120 };
 
 SpiralGatesGame::SpiralGatesGame(int difficulty)
-	:MiniGame(MiniGame::Type::SpiralGates, difficulty, 2, 1)
+	:MiniGame(MiniGame::Type::SpiralGates, difficulty, 2)
 	, m_MaxNumGates{ 4 }
 	, m_MinNumGates{ 2 }
 	, m_NumUsedGates{}
@@ -20,6 +20,11 @@ SpiralGatesGame::SpiralGatesGame(int difficulty)
 	, m_SelectorAngle{}
 	, m_SelectorRotSpeed{ 150.f }
 	, m_SelectorNextGateIdx{}
+	//, m_StartEmptyArcLength{}
+	//, m_FinishArcLength{}
+	//, m_GateArcLength{}
+	//, m_MinAngleBetweenGates{}
+	//, m_MaxAngleBetweenGates{}
 {
 	Init();
 }
@@ -71,14 +76,9 @@ void SpiralGatesGame::Update(float dt, const GameData::Input& input, GameData::F
 	else if (IsSelectorPastAngle(m_EndAngle)) //finished
 	{
 		m_Points += m_NumUsedGates;
-		if (m_NumPlaythroughs != m_NumPlaythroughsToComplete)
-			Init();
-		else
-		{
-			feedback.totalPoints = m_Points;
-			m_State = State::Completed;
-			return;
-		}
+		feedback.totalPoints = m_Points;
+		m_State = State::Completed;
+		return;
 	}
 }
 
@@ -131,7 +131,21 @@ void SpiralGatesGame::Init(bool activate)
 	m_SelectorAngle = m_StartAngle;
 	m_SelectorNextGateIdx = 0;
 
-	++m_NumPlaythroughs;
+	CalculateTimeToComplete();
+}
+
+void SpiralGatesGame::ConfigureDifficulty(int difficulty)
+{
+}
+
+void SpiralGatesGame::CalculateTimeToComplete()
+{
+	float spiralArcLength{ std::abs(m_EndAngle - m_StartAngle) };
+	float timeToTravelSpiral{ spiralArcLength / m_SelectorRotSpeed };
+
+	float multiplier{ m_MaxDifficulty - m_Difficulty + 1.f };
+
+	m_MaxTimeToComplete = multiplier * timeToTravelSpiral;
 }
 
 bool SpiralGatesGame::IsSelectorPastAngle(float angle) const

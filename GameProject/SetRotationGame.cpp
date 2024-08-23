@@ -6,10 +6,10 @@
 const std::vector<float> SetRotationGame::s_AngleDeviationPerDifficulty{ 30.f, 20.f, 10.f };
 
 SetRotationGame::SetRotationGame(int difficulty)
-	:MiniGame(MiniGame::Type::SetRotation, difficulty, 2, 3)
-	, m_ValidAngle{}
+	:MiniGame(MiniGame::Type::SetRotation, difficulty, 2)
+	, m_ValidAngle{  }
 	, m_ValidAngleDeviation{}
-	, m_SelectorAngle{}
+	, m_SelectorAngle{ float(rand() % 360) }
 	, m_SelectorRotSpeed{ 180.f }
 {
 	Init();
@@ -67,14 +67,9 @@ void SetRotationGame::Click(GameData::Feedback& feedback)
 	if (utils::SmallestAngleBetween2Angles(m_SelectorAngle, m_ValidAngle) < m_ValidAngleDeviation)
 	{
 		++m_Points;
-		if (m_NumPlaythroughs != m_NumPlaythroughsToComplete)
-			Init();
-		else
-		{
-			feedback.totalPoints = m_Points;
-			m_State = State::Completed;
-			return;
-		}
+		feedback.totalPoints = m_Points;
+		m_State = State::Completed;
+		return;
 	}
 	else
 	{
@@ -85,23 +80,17 @@ void SetRotationGame::Click(GameData::Feedback& feedback)
 
 void SetRotationGame::Init(bool activate)
 {
-	if (m_NumPlaythroughs == 0)
-	{
-		m_ValidAngle = float(rand() % 360);
-		//Set m_SelectorAngle so it never starts in the correct angle
-		float minAngleDeviation{ 30.f };
-		int sign{ rand() % 2 == 0 ? 1 : -1 };
-		m_SelectorAngle = utils::NormalizeAngle(m_ValidAngle + sign * (rand() % int(180 - minAngleDeviation) + minAngleDeviation));
-	}
-	else
-	{
-		//Set the new angle to be min 60 degrees from the current selector pos.
-		float minAngleDiff{ 60.f };
-		int sign{ rand() % 2 == 0 ? 1 : -1 };
-		m_ValidAngle = utils::NormalizeAngle(m_ValidAngle + sign * (rand() % int(180 - minAngleDiff) + minAngleDiff));
-	}
-
+	//Set the new angle to be min 60 degrees from the current selector pos.
+	float minAngleDiff{ 60.f };
+	int sign{ rand() % 2 == 0 ? 1 : -1 };
+	m_ValidAngle = utils::NormalizeAngle(m_SelectorAngle + sign * (rand() % int(180 - minAngleDiff) + minAngleDiff));
 	m_ValidAngleDeviation = s_AngleDeviationPerDifficulty[m_Difficulty];
+}
 
-	++m_NumPlaythroughs;
+void SetRotationGame::ConfigureDifficulty(int difficulty)
+{
+}
+
+void SetRotationGame::CalculateTimeToComplete()
+{
 }

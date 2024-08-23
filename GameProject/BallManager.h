@@ -7,7 +7,7 @@
 class BallManager final
 {
 public:
-	BallManager(Point2f startPos, float ballSize);
+	BallManager(Point2f startPos, float ballSize, float deadLineHeight);
 	~BallManager();
 
 	void Start();
@@ -29,6 +29,7 @@ private:
 	std::vector<Ball*> m_pBalls;
 	int m_FirstBallIdx;
 	int m_LastBallIdx; 
+	float m_DeadLineHeight;
 
 	std::vector<float> m_BallSizes;
 };

@@ -8,7 +8,7 @@
 #include "SelectColorGame.h"
 #include "SpiralGatesGame.h"
 
-BallManager::BallManager(Point2f startPos, float ballSize)
+BallManager::BallManager(Point2f startPos, float ballSize, float deadLineHeight)
 	: m_Pos{ startPos }
 	, m_Active{ false }
 	, m_Difficulty{ 0 }
@@ -18,6 +18,7 @@ BallManager::BallManager(Point2f startPos, float ballSize)
 	, m_FirstBallIdx{ 0 }
 	, m_LastBallIdx{ int(m_pBalls.size() - 1) }
 	, m_BallSizes{ std::vector<float>{200.f, 100.f, 50.f} }
+	, m_DeadLineHeight{ deadLineHeight }
 {
 }
 
@@ -81,18 +82,26 @@ void BallManager::CreateNewBall(bool activate)
 	int ballSizeIdx{ int(rand() % m_BallSizes.size()) };
 	float ballSize{ m_BallSizes[0] };
 
-	MiniGame* pMiniGame{ new SpiralGatesGame(m_Difficulty) };
-	//MiniGame* pMiniGame{};
-	//int typeIdx{ rand() % 2 };
-	//switch (MiniGame::Type(typeIdx))
-	//{
-	//case MiniGame::Type::SelectColor:
-	//	pMiniGame = new SelectColorGame(0);
-	//	break;
-	//case MiniGame::Type::SetRotation:
-	//	pMiniGame = new SetRotationGame(0);
-	//	break;
-	//}
+	//TO-DO: fix speed
+	//MiniGame* pMiniGame{ new SpiralGatesGame(m_Difficulty) };
+	//float timeToComplete{ pMiniGame->GetTimeToComplete() };
+	//float distToTravel{ std::abs(m_Pos.y - m_DeadLineHeight) };
+	//float speed{ distToTravel / timeToComplete };
+
+	MiniGame* pMiniGame{};
+	int typeIdx{ rand() % 3 };
+	switch (MiniGame::Type(typeIdx))
+	{
+	case MiniGame::Type::SelectColor:
+		pMiniGame = new SelectColorGame(m_Difficulty);
+		break;
+	case MiniGame::Type::SetRotation:
+		pMiniGame = new SetRotationGame(m_Difficulty);
+		break;
+	case MiniGame::Type::SpiralGates:
+		pMiniGame = new SpiralGatesGame(m_Difficulty);
+		break;
+	}
 
 	m_pBalls[m_LastBallIdx] = new Ball(ballSize, m_Pos, 100.f, pMiniGame);
 	if (activate)

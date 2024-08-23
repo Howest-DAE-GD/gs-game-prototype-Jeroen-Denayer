@@ -11,7 +11,7 @@ Ball::Ball(float size, const Point2f& pos, float speed, MiniGame* pMiniGame)
 	, m_Rad{ size / 2.f }
 	, m_Pos{ pos }
 	, m_Speed{ speed }
-	, m_TimeToSolve{ 3.f }
+	, m_TimeToComplete{ 3.f }
 	, m_TimeSinceCompletion{ 0.f }
 	, m_Color{ Color4f{1.f, 1.f, 1.f, 1.f} }
 	, m_pMiniGame{ pMiniGame }
@@ -71,9 +71,9 @@ void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& fe
 	}
 }
 
-float Ball::GetTimeToSolve() const
+float Ball::GetTimeToComplete() const
 {
-	return m_TimeToSolve;
+	return m_pMiniGame->GetTimeToComplete();
 }
 
 void Ball::SetState(State newState)

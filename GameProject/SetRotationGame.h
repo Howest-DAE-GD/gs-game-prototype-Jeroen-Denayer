@@ -12,6 +12,9 @@ public:
 	virtual void Click(GameData::Feedback& feedback) override;
 	virtual void Init(bool activate = false) override;
 private:
+	virtual void ConfigureDifficulty(int difficulty) override;
+	virtual void CalculateTimeToComplete() override;
+
 	float m_ValidAngle;
 	float m_ValidAngleDeviation;
 	float m_SelectorAngle;

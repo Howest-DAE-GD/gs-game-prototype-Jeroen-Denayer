@@ -21,7 +21,7 @@ public:
 	void Draw() const;
 	void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback);
 
-	float GetTimeToSolve() const;
+	float GetTimeToComplete() const;
 private:
 	//Functions
 	void SetState(State newState);
@@ -32,7 +32,7 @@ private:
 	float m_Rad;
 	Point2f m_Pos;
 	float m_Speed;
-	float m_TimeToSolve;
+	float m_TimeToComplete;
 	float m_TimeSinceCompletion;
 	Color4f m_Color;
 

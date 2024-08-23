@@ -156,7 +156,7 @@ void Game::Start()
 	if (m_pBallManager)
 		delete m_pBallManager;
 	float ballSize{ 200.f };
-	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height + ballSize }, ballSize);
+	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height + ballSize }, ballSize, 200.f);
 	m_pBallManager->Start();
 
 	m_DeadlineHeight = m_pUI->GetHeight() + m_pBallManager->GetBallSizes()[0];

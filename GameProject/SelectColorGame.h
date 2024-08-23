@@ -22,6 +22,9 @@ private:
 		float angleDeviation;
 	};
 
+	virtual void ConfigureDifficulty(int difficulty) override;
+	virtual void CalculateTimeToComplete() override;
+
 	//Members
 	int m_ValidColorIdx;
 	int m_MaxNumColorRegions;

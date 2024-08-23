@@ -2,7 +2,7 @@
 #include "MiniGame.h"
 #include "Spiral.h"
 
-class SpiralGatesGame
+class SpiralGatesGame final
 	:public MiniGame
 {
 public:
@@ -22,6 +22,8 @@ private:
 	};
 
 	//Functions
+	virtual void ConfigureDifficulty(int difficulty) override;
+	virtual void CalculateTimeToComplete() override;
 	bool IsSelectorPastAngle(float angle) const;
 	bool SelectorOverlapsGate(const Gate& gate) const;
 
@@ -38,6 +40,12 @@ private:
 	float m_SelectorAngle;
 	float m_SelectorRotSpeed;
 	int m_SelectorNextGateIdx;
+
+	//float m_StartEmptyArcLength;
+	//float m_FinishArcLength;
+	//float m_GateArcLength;
+	//float m_MinAngleBetweenGates;
+	//float m_MaxAngleBetweenGates;
 
 	static float s_FinishArcLength;
 	static std::vector<float> s_GateArcLength;

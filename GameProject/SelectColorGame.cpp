@@ -18,7 +18,7 @@ const std::vector<float> SelectColorGame::s_AngleDeviationPerDifficulty{ 30.f, 2
 const std::vector<float> SelectColorGame::s_SelectorRotSpeedPerDifficulty{ 180.f, 180.f, 210.f };
 
 SelectColorGame::SelectColorGame(int difficulty)
-	:MiniGame(MiniGame::Type::SelectColor, difficulty, 2, 3)
+	:MiniGame(MiniGame::Type::SelectColor, difficulty, 2)
 	, m_ValidColorIdx{}
 	, m_MaxNumColorRegions{ 4 }
 	, m_MinNumColorRegions{ 2 }
@@ -87,14 +87,9 @@ void SelectColorGame::Click(GameData::Feedback& feedback)
 	if (hitRegion)
 	{
 		++m_Points;
-		if (m_NumPlaythroughs != m_NumPlaythroughsToComplete)
-			Init();
-		else
-		{
-			feedback.totalPoints = m_Points;
-			m_State = State::Completed;
-			return;
-		}
+		feedback.totalPoints = m_Points;
+		m_State = State::Completed;
+		return;
 	}
 	else
 	{
@@ -136,6 +131,12 @@ void SelectColorGame::Init(bool activate)
 	}
 
 	m_ValidColorIdx = m_ColorRegions[rand() % m_NumUsedColorRegions].colorIdx;
+}
 
-	++m_NumPlaythroughs;
+void SelectColorGame::ConfigureDifficulty(int difficulty)
+{
+}
+
+void SelectColorGame::CalculateTimeToComplete()
+{
 }
