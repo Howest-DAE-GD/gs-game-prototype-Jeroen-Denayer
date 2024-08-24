@@ -45,7 +45,7 @@ public:
 
 	static void DrawLineOnSpiral(const DrawInfo& info, float angle, float lineWidth = 1.f);
 	static void DrawSpiralVertices(const Point2f& center, float startRad, float endRad, float startAngle, float endAngle);
-	static void DrawSpiral(const Point2f& center, float startRad, float endRad, float startAngle, float tillendAngleAngle, float lineWidth = 1.f);
+	static void DrawSpiral(const Point2f& center, float startRad, float endRad, float startAngle, float endAngle, float lineWidth = 1.f);
 	static void DrawArcBoundary(const Point2f& center, float innerRad, float outerRad, float startAngle, float endAngle, float lineWidth = 1.0f);
 	static void DrawFilledArc(const Point2f& center, float innerRad, float outerRad, float startAngle, float endAngle);
 	static void DrawSpiralBoundary(const DrawInfo& info, float lineWidth = 1.f);

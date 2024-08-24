@@ -10,22 +10,22 @@ class Ball
 public:
 	enum class State
 	{
-		Idle, Active, Completed, Missed
+		Idle, Active, Finished
 	};
 
 
 
-	Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, MiniGame* pMiniGame);
+	Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, std::vector<MiniGame*>* pMiniGames);
 	~Ball();
 
 	void Draw() const;
 	void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback);
-
-	float GetTimeToComplete() const;
 private:
 	//Functions
+	void DrawMiniGameIndicators(float innerRad) const;
 	void SetState(State newState);
 	void UpdateSpeed(float dt);
+	void ActivateNextMiniGame(GameData::Feedback& feedback);
 
 	//Members
 	State m_State;
@@ -40,7 +40,8 @@ private:
 	float m_TimeSinceCompletion;
 	Color4f m_Color;
 
-	MiniGame* m_pMiniGame;
+	int m_ActiveMiniGameIdx;
+	std::vector<MiniGame*>* m_pMiniGames;
 
 	static float s_FadeTime;
 

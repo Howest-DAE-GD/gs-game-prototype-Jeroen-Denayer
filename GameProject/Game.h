@@ -37,10 +37,12 @@ private:
 
 	//Members
 	const Rectf& m_Viewport;
+	bool m_GameOver;
 	BallManager* m_pBallManager;
 	Lighter* m_pLighter;
 	UI* m_pUI;
-	int m_Score;
+	int m_Multiplier;
+	std::int64_t m_Score;
 	int m_Difficulty;
 	std::vector<int> m_PointsToIncreaseDifficulty;
 	int m_StartLives;

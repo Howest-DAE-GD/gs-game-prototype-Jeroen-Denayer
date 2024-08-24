@@ -65,13 +65,12 @@ void SetRotationGame::Click(GameData::Feedback& feedback)
 	if (utils::SmallestAngleBetween2Angles(m_SelectorAngle, m_ValidAngle) < m_Config.validAngleDeviation)
 	{
 		++m_Points;
-		feedback.totalPoints = m_Points;
 		m_State = State::Completed;
 		return;
 	}
 	else
 	{
-		feedback.lostLife = true;
+		feedback.failedMiniGame = true;
 		m_State = State::Failed;
 	}
 }

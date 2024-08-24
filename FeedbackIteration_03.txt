@@ -1,4 +1,4 @@
-Iteration 2
+Iteration 3
 
 -------------------
 ##### Changes #####
@@ -11,6 +11,7 @@ Iteration 2
 - added TimeToComplete() to all minigames
 - added struct Config{} to all minigames, this config changes depending on the difficulty
 - added ConfigureDifficulty() to all minigames
+- added smooth interpolation for the ball speed
 
 ----------------------------
 ##### Target Questions #####
@@ -24,7 +25,14 @@ Playtester 1: Elke
 
 Playtester 2: Daan
 
-Playtester 3:
+Playtester 3: Bart
+- Concept is way more fun than iteration 2
+- small bug with the SpiralGatesGame with clicking on already opened gates
+- horizontal deadLine is a bit distracting, maybe make it light grey
+- make the difficulty scale less quickly
+- add lots more minigames to increase fun/complexity/variation
+- make it so you only have I try per minigame, otherwise it is a bit confusing for example with the SpiralGatesGame restarting when you misclick
+- SelectColorGame and SetRotationGame could already be activated when not fully in view, it is good however that the SpiralGatesGame only starts when fully in view
 
 Playtest 4:
 

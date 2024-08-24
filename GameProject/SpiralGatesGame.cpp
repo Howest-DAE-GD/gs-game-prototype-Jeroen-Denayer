@@ -68,7 +68,6 @@ void SpiralGatesGame::Update(float dt, const GameData::Input& input, GameData::F
 	else if (IsSelectorPastAngle(m_EndAngle)) //finished
 	{
 		m_Points += m_NumUsedGates;
-		feedback.totalPoints = m_Points;
 		m_State = State::Completed;
 		return;
 	}
@@ -84,13 +83,13 @@ void SpiralGatesGame::Click(GameData::Feedback& feedback)
 	}
 	else if (IsSelectorPastAngle(gate.startAngle)) //inside gate
 	{
-		gate.isOpen = true;
+		gate.isOpen = !gate.isOpen;
 		++m_SelectorNextGateIdx;
 	}
 	else //before gate, miss click
 	{
-		m_SelectorAngle = m_StartAngle;
-		feedback.lostLife = true;
+		feedback.failedMiniGame = true;
+		m_State = State::Failed;
 	}
 }
 

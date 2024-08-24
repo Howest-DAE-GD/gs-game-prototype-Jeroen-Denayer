@@ -18,6 +18,8 @@ private:
 	//Functions
 	void CreateNewBall();
 	void DrawDeadline() const;
+	std::vector<MiniGame*>* GetMiniGamesVector(int numMiniGames);
+	float CalculateMiniGamesTime(const std::vector<MiniGame*>& miniGames);
 
 	//Members
 	Rectf m_Viewport;
@@ -30,5 +32,7 @@ private:
 	int m_LastBallIdx; 
 	float m_BallSize;
 	float m_DeadlineHeight;
+	int m_MinNumMiniGamesPerBall;
+	int m_MaxNumMiniGamesPerBall;
 };
 

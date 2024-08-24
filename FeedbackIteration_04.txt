@@ -1,0 +1,30 @@
+Iteration 4
+
+-------------------
+##### Changes #####
+- added multiple minigames per ball
+- added visual indication of how many minigames a ball has
+- colored the indicators based on if the minigame is Idle, Active, Completed or Failed
+- added multiplier
+- added colored background to the balls
+
+To-Do:
+- adding scorching on the outside of each ball in an arc for the part that is below the deadLineHeight
+- add probability that balls contain an extra life, only added when the ball is perfectly completed
+
+----------------------------
+##### Target Questions #####
+
+--------------------
+##### Feedback #####
+Playtester 1:
+
+
+Playtester 2:
+
+Playtester 3:
+
+Playtest 4:
+
+--------------------
+##### Analysis #####

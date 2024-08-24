@@ -25,3 +25,8 @@ float MiniGame::GetTimeToComplete() const
 {
 	return m_MaxTimeToComplete;
 }
+
+int MiniGame::GetPoints() const
+{
+	return m_Points;
+}

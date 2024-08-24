@@ -28,6 +28,7 @@ public:
 	void Activate();
 	State GetState() const;
 	float GetTimeToComplete() const;
+	int GetPoints() const;
 protected:
 	MiniGame(Type type, int difficulty, int maxDifficulty);
 	

@@ -19,6 +19,8 @@ BallManager::BallManager(const Rectf& viewport, float ballSize, float deadLineHe
 	, m_LastBallIdx{ int(m_pBalls.size() - 1) }
 	, m_BallSize{ ballSize }
 	, m_DeadlineHeight{ deadLineHeight }
+	, m_MinNumMiniGamesPerBall{ 1 }
+	, m_MaxNumMiniGamesPerBall{ 4 }
 {
 }
 
@@ -60,10 +62,10 @@ void BallManager::Update(float dt, const GameData::Input& input, GameData::Feedb
 		if (pBall->m_State == Ball::State::Idle && topPos < m_Viewport.height)
 			pBall->SetState(Ball::State::Active);
 		else if (pBall->m_State == Ball::State::Active && topPos < m_DeadlineHeight)
-			pBall->SetState(Ball::State::Missed);
+			pBall->SetState(Ball::State::Finished);
 	}
 
-	if (m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Completed || m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Missed)
+	if (m_pBalls[m_FirstBallIdx]->m_State == Ball::State::Finished)
 		CreateNewBall();
 }
 
@@ -84,37 +86,18 @@ void BallManager::CreateNewBall()
 	if (m_pBalls[m_LastBallIdx])
 		delete m_pBalls[m_LastBallIdx];
 
-	//Choose a random minigame
-	MiniGame* pMiniGame{};
-	int typeIdx{ rand() % 3 };
-	switch (MiniGame::Type(typeIdx))
-	{
-	case MiniGame::Type::SelectColor:
-		pMiniGame = new SelectColorGame(m_Difficulty);
-		break;
-	case MiniGame::Type::SetRotation:
-		pMiniGame = new SetRotationGame(m_Difficulty);
-		break;
-	case MiniGame::Type::SpiralGates:
-		pMiniGame = new SpiralGatesGame(m_Difficulty);
-		break;
-	}
+	int numMiniGames{ rand() % (m_MaxNumMiniGamesPerBall - m_MinNumMiniGamesPerBall + 1) + m_MinNumMiniGamesPerBall };
+	std::vector<MiniGame*>* pMiniGames{ GetMiniGamesVector(numMiniGames) };
+	float timeToComplete{ CalculateMiniGamesTime(*pMiniGames) };
 
-	//Calculate speed needed
+	float idleSpeed{ 100.f };
 	float maxSpeed{ 200.f };
 	float activeSpeed{ 100.f };
-	if (pMiniGame)
-	{
-		float timeToComplete{ pMiniGame->GetTimeToComplete() };
-		float distToTravel{ std::abs(m_Viewport.height - m_DeadlineHeight) };
-		activeSpeed = distToTravel / timeToComplete;
-	}
+	float distToTravel{ std::abs(m_Viewport.height - m_DeadlineHeight) };
+	activeSpeed = distToTravel / timeToComplete;
 	activeSpeed = std::min(activeSpeed, maxSpeed);
 
-	if (activeSpeed < 0.f)
-		int i = 0;
-
-	m_pBalls[m_LastBallIdx] = new Ball(m_Pos, m_BallSize, 100.f, activeSpeed, pMiniGame);
+	m_pBalls[m_LastBallIdx] = new Ball(m_Pos, m_BallSize, idleSpeed, activeSpeed, pMiniGames);
 	m_FirstBallIdx = m_LastBallIdx;
 }
 
@@ -127,4 +110,40 @@ void BallManager::DrawDeadline() const
 	float triangleWidth{ 10.f };
 	utils::FillPolygon(std::vector<Point2f>{Point2f{ 0.f, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ triangleHeight, m_DeadlineHeight }, Point2f{ 0.f,m_DeadlineHeight - triangleWidth * 0.5f }});
 	utils::FillPolygon(std::vector<Point2f>{Point2f{ m_Viewport.width, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ m_Viewport.width - triangleHeight, m_DeadlineHeight }, Point2f{ m_Viewport.width,m_DeadlineHeight - triangleWidth * 0.5f }});
+}
+
+std::vector<MiniGame*>* BallManager::GetMiniGamesVector(int numMiniGames)
+{
+	std::vector<MiniGame*>* pMiniGames{ new std::vector<MiniGame*>(numMiniGames) };
+
+	for (int i{}; i < pMiniGames->size(); ++i)
+	{
+		//Choose a random minigame
+		MiniGame*& pMiniGame{ (*pMiniGames)[i] };
+		int typeIdx{ rand() % 3 };
+		switch (MiniGame::Type(typeIdx))
+		{
+		case MiniGame::Type::SelectColor:
+			pMiniGame = new SelectColorGame(m_Difficulty);
+			break;
+		case MiniGame::Type::SetRotation:
+			pMiniGame = new SetRotationGame(m_Difficulty);
+			break;
+		case MiniGame::Type::SpiralGates:
+			pMiniGame = new SpiralGatesGame(m_Difficulty);
+			break;
+		}
+	}
+
+	return pMiniGames;
+}
+
+float BallManager::CalculateMiniGamesTime(const std::vector<MiniGame*>& miniGames)
+{
+	float totalTimeToComplete{};
+
+	for (const MiniGame* pMiniGame : miniGames)
+		totalTimeToComplete += pMiniGame->GetTimeToComplete();
+
+	return totalTimeToComplete;
 }

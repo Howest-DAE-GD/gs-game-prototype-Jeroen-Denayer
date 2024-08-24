@@ -84,13 +84,12 @@ void SelectColorGame::Click(GameData::Feedback& feedback)
 	if (hitRegion)
 	{
 		++m_Points;
-		feedback.totalPoints = m_Points;
 		m_State = State::Completed;
 		return;
 	}
 	else
 	{
-		feedback.lostLife = true;
+		feedback.failedMiniGame = true;
 		m_State = State::Failed;
 	}
 }

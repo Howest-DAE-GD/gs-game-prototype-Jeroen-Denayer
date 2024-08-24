@@ -11,9 +11,11 @@ namespace GameData
 
 	struct Feedback
 	{
-		int totalPoints;
+		bool finishedBall;
+		bool perfectBall;
+		int totalBallPoints;
 		int newPoints;
-		bool lostLife;
+		bool failedMiniGame;
 	};
 }
 

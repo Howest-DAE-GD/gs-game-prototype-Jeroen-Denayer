@@ -7,12 +7,14 @@
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
 	, m_Viewport{ GetViewPort() }
+	, m_GameOver{}
 	, m_pBallManager{ nullptr }
 	, m_pLighter{ nullptr }
 	, m_pUI{ new UI(m_Viewport) }
-	, m_Score{ 0 }
+	, m_Multiplier{}
+	, m_Score{}
 	, m_Difficulty{ 0 }
-	, m_PointsToIncreaseDifficulty{ std::vector<int>{5, 10, 15} }
+	, m_PointsToIncreaseDifficulty{ std::vector<int>{100, 200, 500} }
 	, m_StartLives{ 5 }
 	, m_MaxLives{ m_StartLives }
 	, m_Lives{ m_StartLives }
@@ -31,6 +33,9 @@ Game::~Game( )
 
 void Game::Update( float dt )
 {
+	if (m_GameOver)
+		return;
+
 	m_TimeSinceLastPress += dt;
 	if (m_TimeSinceLastPress > m_TimeToLoseSingleLife)
 	{
@@ -72,14 +77,17 @@ void Game::Draw() const
 
 	//Draw UI
 	float percOfLastLifeRemaining{ (m_TimeToLoseSingleLife - m_TimeSinceLastPress) / m_TimeToLoseSingleLife };
-	m_pUI->Draw(m_Score, m_Lives, m_MaxLives, percOfLastLifeRemaining);
+	m_pUI->Draw(m_Score, m_Multiplier, m_Lives, m_MaxLives, percOfLastLifeRemaining);
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
-	//switch (e.keysym.sym)
-	//{
-	//}
+	switch (e.keysym.sym)
+	{
+	case SDLK_r:
+		Start();
+		break;
+	}
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
@@ -128,7 +136,9 @@ void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 
 void Game::Start()
 {
+	m_GameOver = false;
 	m_Score = 0;
+	m_Multiplier = 1;
 	m_MaxLives = m_StartLives;
 	m_Lives = m_StartLives;
 
@@ -142,17 +152,23 @@ void Game::Start()
 
 void Game::CheckFeedback(const GameData::Feedback& feedback)
 {
-	if (feedback.lostLife)
+	if (feedback.failedMiniGame)
 		DecreaseLives(1);
-	if (feedback.totalPoints != 0)
-		IncreaseScore(feedback.totalPoints);
+	if (feedback.finishedBall)
+	{
+		IncreaseScore(feedback.totalBallPoints);
+		if (feedback.perfectBall)
+			++m_Multiplier;
+		else
+			m_Multiplier = std::max(1, int(m_Multiplier / 2.f));
+	}
 }
 
 void Game::IncreaseScore(int addedScore)
 {
-	m_Score += addedScore;
+	m_Score += addedScore * m_Multiplier;
 
-	if (m_Score > m_PointsToIncreaseDifficulty[std::min(m_Difficulty, int(m_PointsToIncreaseDifficulty.size() - 1))])
+	if (m_Difficulty < m_PointsToIncreaseDifficulty.size() && m_Score > m_PointsToIncreaseDifficulty[m_Difficulty])
 	{
 		++m_Difficulty;
 		m_pBallManager->IncreaseDifficulty();
@@ -163,5 +179,5 @@ void Game::DecreaseLives(int numLives)
 {
 	m_Lives -= numLives;
 	if (m_Lives <= 0)
-		Start();
+		m_GameOver = true;
 }
