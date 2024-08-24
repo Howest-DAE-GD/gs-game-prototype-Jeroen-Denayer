@@ -15,7 +15,7 @@ public:
 
 
 
-	Ball(float size, const Point2f&, float speed, MiniGame* pMiniGame);
+	Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, MiniGame* pMiniGame);
 	~Ball();
 
 	void Draw() const;
@@ -25,13 +25,17 @@ public:
 private:
 	//Functions
 	void SetState(State newState);
+	void UpdateSpeed(float dt);
 
 	//Members
 	State m_State;
 	int m_Points;
 	float m_Rad;
 	Point2f m_Pos;
+	float m_Acc;
 	float m_Speed;
+	float m_TargetSpeed;
+	float m_ActiveSpeed;
 	float m_TimeToComplete;
 	float m_TimeSinceCompletion;
 	Color4f m_Color;

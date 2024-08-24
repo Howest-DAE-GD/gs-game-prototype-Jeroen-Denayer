@@ -23,8 +23,7 @@ public:
 
 	virtual void Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const = 0;
 	virtual void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback) = 0;
-	virtual void Click(GameData::Feedback& feedback) = 0;
-	virtual void Init(bool activate = false) = 0;
+	virtual void Init(int difficulty, bool activate = false) = 0;
 
 	void Activate();
 	State GetState() const;
@@ -32,6 +31,7 @@ public:
 protected:
 	MiniGame(Type type, int difficulty, int maxDifficulty);
 	
+	virtual void Click(GameData::Feedback& feedback) = 0;
 	virtual void ConfigureDifficulty(int difficulty) = 0;
 	virtual void CalculateTimeToComplete() = 0;
 

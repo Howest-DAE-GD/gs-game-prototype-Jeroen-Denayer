@@ -8,6 +8,9 @@ Iteration 2
 - moved all spiral/arc drawing functions from utils to separate Spiral class
 - balls are now only active when they are fully visible on the screen
 - balls are bigger so they are more easily visible
+- added TimeToComplete() to all minigames
+- added struct Config{} to all minigames, this config changes depending on the difficulty
+- added ConfigureDifficulty() to all minigames
 
 ----------------------------
 ##### Target Questions #####

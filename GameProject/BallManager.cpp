@@ -10,7 +10,7 @@
 
 BallManager::BallManager(const Rectf& viewport, float ballSize, float deadLineHeight)
 	: m_Viewport{ viewport }
-	, m_Pos{ Point2f{viewport.width / 2.f, viewport.height + ballSize} }
+	, m_Pos{ Point2f{viewport.width / 2.f, viewport.height + ballSize / 2.f} }
 	, m_Active{ false }
 	, m_Difficulty{ 0 }
 	, m_MaxNumBallsOnScreen{ 10 }
@@ -102,23 +102,20 @@ void BallManager::CreateNewBall()
 
 	//Calculate speed needed
 	float maxSpeed{ 200.f };
-	float speed{ 100.f };
+	float activeSpeed{ 100.f };
 	if (pMiniGame)
 	{
 		float timeToComplete{ pMiniGame->GetTimeToComplete() };
-		float distToTravel{ std::abs(m_Pos.y - m_DeadlineHeight) };
-		speed = distToTravel / timeToComplete;
+		float distToTravel{ std::abs(m_Viewport.height - m_DeadlineHeight) };
+		activeSpeed = distToTravel / timeToComplete;
 	}
-	speed = std::min(speed, maxSpeed);
+	activeSpeed = std::min(activeSpeed, maxSpeed);
 
-	m_pBalls[m_LastBallIdx] = new Ball(m_BallSize, m_Pos, speed, pMiniGame);
+	if (activeSpeed < 0.f)
+		int i = 0;
+
+	m_pBalls[m_LastBallIdx] = new Ball(m_Pos, m_BallSize, 100.f, activeSpeed, pMiniGame);
 	m_FirstBallIdx = m_LastBallIdx;
-}
-
-void BallManager::SetNextBallActive()
-{
-	++m_FirstBallIdx %= m_pBalls.size();
-	m_pBalls[m_FirstBallIdx]->SetState(Ball::State::Active);
 }
 
 void BallManager::DrawDeadline() const

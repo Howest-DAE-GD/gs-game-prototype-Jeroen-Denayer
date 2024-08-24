@@ -11,8 +11,7 @@ public:
 
 	virtual void Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const override;
 	virtual void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback) override;
-	virtual void Click(GameData::Feedback& feedback) override;
-	virtual void Init(bool activate = false) override;
+	virtual void Init(int difficulty, bool activate = false) override;
 private:
 	struct ColorRegion
 	{
@@ -22,6 +21,13 @@ private:
 		float angleDeviation;
 	};
 
+	struct Config
+	{
+		float selectorRotSpeed;
+		float angleDeviation;
+	};
+
+	virtual void Click(GameData::Feedback& feedback) override;
 	virtual void ConfigureDifficulty(int difficulty) override;
 	virtual void CalculateTimeToComplete() override;
 
@@ -33,11 +39,10 @@ private:
 	std::vector<ColorRegion> m_ColorRegions;
 
 	float m_SelectorAngle;
-	float m_SelectorRotSpeed;
 	int m_SelectorRotDir;
 
+	Config m_Config;
+
 	static const std::vector<Color3f> s_Colors;
-	static const std::vector<float> s_AngleDeviationPerDifficulty;
-	static const std::vector<float> s_SelectorRotSpeedPerDifficulty;
 };
 

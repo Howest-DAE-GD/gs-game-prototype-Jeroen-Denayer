@@ -3,33 +3,31 @@
 #include "BallManager.h"
 #include "Spiral.h"
 
-const std::vector<float> SetRotationGame::s_AngleDeviationPerDifficulty{ 30.f, 20.f, 10.f };
-
 SetRotationGame::SetRotationGame(int difficulty)
 	:MiniGame(MiniGame::Type::SetRotation, difficulty, 2)
 	, m_ValidAngle{  }
-	, m_ValidAngleDeviation{}
 	, m_SelectorAngle{ float(rand() % 360) }
 	, m_SelectorRotSpeed{ 180.f }
+	, m_Config{}
 {
-	Init();
+	Init(m_Difficulty);
 }
 
 void SetRotationGame::Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const
 {
-	float fromAngle{ m_ValidAngle - m_ValidAngleDeviation };
-	float tillAngle{ m_ValidAngle + m_ValidAngleDeviation };
+	float startAngle{ m_ValidAngle - m_Config.validAngleDeviation };
+	float endAgle{ m_ValidAngle + m_Config.validAngleDeviation };
 
 	//Draw the valid angle region
 	utils::SetColor(Color3f{ 0.212f, 0.388f, 0.149f });
-	Spiral::DrawFilledArc(pos, innerRad, outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
+	Spiral::DrawFilledArc(pos, innerRad, outerRad, utils::Radians(startAngle), utils::Radians(endAgle));
 
 	//Draw 2 lines to indicate the valid angle region
 	float linePercOfRad{ 0.5f };
-	Point2f p0{ pos.x + std::cosf(utils::Radians(fromAngle)) * innerRad	, pos.y + std::sinf(utils::Radians(fromAngle)) * innerRad };
-	Point2f p1{ pos.x + std::cosf(utils::Radians(fromAngle)) * outerRad	, pos.y + std::sinf(utils::Radians(fromAngle)) * outerRad };
-	Point2f p2{ pos.x + std::cosf(utils::Radians(tillAngle)) * innerRad	, pos.y + std::sinf(utils::Radians(tillAngle)) * innerRad };
-	Point2f p3{ pos.x + std::cosf(utils::Radians(tillAngle)) * outerRad	, pos.y + std::sinf(utils::Radians(tillAngle)) * outerRad };
+	Point2f p0{ pos.x + std::cosf(utils::Radians(startAngle)) * innerRad	, pos.y + std::sinf(utils::Radians(startAngle)) * innerRad };
+	Point2f p1{ pos.x + std::cosf(utils::Radians(startAngle)) * outerRad	, pos.y + std::sinf(utils::Radians(startAngle)) * outerRad };
+	Point2f p2{ pos.x + std::cosf(utils::Radians(endAgle)) * innerRad	, pos.y + std::sinf(utils::Radians(endAgle)) * innerRad };
+	Point2f p3{ pos.x + std::cosf(utils::Radians(endAgle)) * outerRad	, pos.y + std::sinf(utils::Radians(endAgle)) * outerRad };
 	utils::SetColor(Color3f{ 1.f, 1.f, 1.f });
 	utils::DrawLine(p0, p1, 2.f);
 	utils::DrawLine(p2, p3, 2.f);
@@ -64,7 +62,7 @@ void SetRotationGame::Update(float dt, const GameData::Input& input, GameData::F
 
 void SetRotationGame::Click(GameData::Feedback& feedback)
 {
-	if (utils::SmallestAngleBetween2Angles(m_SelectorAngle, m_ValidAngle) < m_ValidAngleDeviation)
+	if (utils::SmallestAngleBetween2Angles(m_SelectorAngle, m_ValidAngle) < m_Config.validAngleDeviation)
 	{
 		++m_Points;
 		feedback.totalPoints = m_Points;
@@ -78,19 +76,41 @@ void SetRotationGame::Click(GameData::Feedback& feedback)
 	}
 }
 
-void SetRotationGame::Init(bool activate)
+void SetRotationGame::Init(int difficulty, bool activate)
 {
+	ConfigureDifficulty(difficulty);
+
+	if (activate)
+		Activate();
+
 	//Set the new angle to be min 60 degrees from the current selector pos.
 	float minAngleDiff{ 60.f };
 	int sign{ rand() % 2 == 0 ? 1 : -1 };
 	m_ValidAngle = utils::NormalizeAngle(m_SelectorAngle + sign * (rand() % int(180 - minAngleDiff) + minAngleDiff));
-	m_ValidAngleDeviation = s_AngleDeviationPerDifficulty[m_Difficulty];
+
+	CalculateTimeToComplete();
 }
 
 void SetRotationGame::ConfigureDifficulty(int difficulty)
 {
+	if (difficulty == 0)
+	{
+		m_Config.validAngleDeviation = 30.f;
+	}
+	else if (difficulty == 1)
+	{
+		m_Config.validAngleDeviation = 20.f;
+	}
+	else if (difficulty == 2)
+	{
+		m_Config.validAngleDeviation = 10.f;
+	}
 }
 
 void SetRotationGame::CalculateTimeToComplete()
 {
+	float distToTravel{ std::abs(m_ValidAngle - m_SelectorAngle) };
+	float timeToTravel{ distToTravel / m_SelectorRotSpeed };
+	float multiplier{ m_MaxDifficulty - m_Difficulty + 1.25f };
+	m_MaxTimeToComplete = multiplier * timeToTravel;
 }

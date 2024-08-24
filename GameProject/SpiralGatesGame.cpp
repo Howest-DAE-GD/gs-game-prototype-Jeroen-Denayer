@@ -1,16 +1,9 @@
 #include "pch.h"
 #include "SpiralGatesGame.h"
 
-float SpiralGatesGame::s_FinishArcLength{ 30.f };
-std::vector<float> SpiralGatesGame::s_GateArcLength{ 40.f, 30.f, 20.f };
-std::vector<int> SpiralGatesGame::s_StartEmptyArcLength{ 120, 90, 60 };
-std::vector<int> SpiralGatesGame::s_MinAngleBetweenGates{ 60, 40, 20 };
-std::vector<int> SpiralGatesGame::s_MaxAngleBetweenGates{ 120, 120, 120 };
-
 SpiralGatesGame::SpiralGatesGame(int difficulty)
 	:MiniGame(MiniGame::Type::SpiralGates, difficulty, 2)
 	, m_MaxNumGates{ 4 }
-	, m_MinNumGates{ 2 }
 	, m_NumUsedGates{}
 	, m_Gates{ std::vector<Gate>(m_MaxNumGates) }
 	, m_StartAngle{}
@@ -18,15 +11,10 @@ SpiralGatesGame::SpiralGatesGame(int difficulty)
 	, m_Loops{}
 	, m_SpiralDir{}
 	, m_SelectorAngle{}
-	, m_SelectorRotSpeed{ 150.f }
 	, m_SelectorNextGateIdx{}
-	//, m_StartEmptyArcLength{}
-	//, m_FinishArcLength{}
-	//, m_GateArcLength{}
-	//, m_MinAngleBetweenGates{}
-	//, m_MaxAngleBetweenGates{}
+	, m_Config{}
 {
-	Init();
+	Init(m_Difficulty);
 }
 
 void SpiralGatesGame::Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const
@@ -53,7 +41,11 @@ void SpiralGatesGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 
 	//Draw finish
 	utils::SetColor(Color3f{ 0.f, 1.f, 0.f });
-	Spiral::DrawLineOnSpiral(drawInfo, m_EndAngle, 5.f);
+	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_EndAngle - m_SpiralDir * 10.f), utils::Radians(m_EndAngle));
+
+	//Draw start
+	utils::SetColor(Color3f{ 0.7f, 0.f, 0.f });
+	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_StartAngle), utils::Radians(m_StartAngle + m_SpiralDir * 10.f));
 
 	//Draw the selector
 	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });
@@ -65,7 +57,7 @@ void SpiralGatesGame::Update(float dt, const GameData::Input& input, GameData::F
 	if (input.pressedSpace)
 		Click(feedback);
 
-	m_SelectorAngle += m_SpiralDir * m_SelectorRotSpeed * dt;
+	m_SelectorAngle += m_SpiralDir * m_Config.selectorRotSpeed * dt;
 
 	if (m_SelectorNextGateIdx < m_NumUsedGates)
 	{
@@ -102,28 +94,30 @@ void SpiralGatesGame::Click(GameData::Feedback& feedback)
 	}
 }
 
-void SpiralGatesGame::Init(bool activate)
+void SpiralGatesGame::Init(int difficulty, bool activate)
 {
-	m_NumUsedGates = rand() % (m_MaxNumGates - m_MinNumGates + 1) + m_MinNumGates;
+	ConfigureDifficulty(difficulty);
+
+	if (activate)
+		Activate();
+
+	m_NumUsedGates = rand() % (m_MaxNumGates - m_Config.minNumGates + 1) + m_Config.minNumGates;
 	m_StartAngle = float(rand() % 360);
 	m_SpiralDir = rand() % 2 == 0 ? 1 : -1;
 
-	int minAngleBetweenGates{s_MinAngleBetweenGates[m_Difficulty]};
-	int maxAngleBetweenGates{ s_MaxAngleBetweenGates[m_Difficulty] };
-
-	float distToNextGate{ float(s_StartEmptyArcLength[m_Difficulty]) };
+	float distToNextGate{ m_Config.startEmptyArcLength };
 	float angle{ m_StartAngle};
 	for (int i{}; i < m_NumUsedGates; ++i)
 	{
 		angle += m_SpiralDir * distToNextGate;
 		Gate& gate{ m_Gates[i] };
 		gate.startAngle = angle;
-		angle += m_SpiralDir * s_GateArcLength[m_Difficulty];
+		angle += m_SpiralDir * m_Config.gateArcLength;
 		gate.endAngle = angle;
 		gate.isOpen = false;
-		distToNextGate = float(rand() % (maxAngleBetweenGates - minAngleBetweenGates) + minAngleBetweenGates);
+		distToNextGate = rand() % int(m_Config.maxAngleBetweenGates - m_Config.minAngleBetweenGates) + m_Config.minAngleBetweenGates;
 	}
-	angle += m_SpiralDir * s_FinishArcLength;
+	angle += m_SpiralDir * m_Config.finishArcLength;
 	m_EndAngle = angle;
 
 	m_Loops = std::abs((m_EndAngle - m_StartAngle) / 360.f);
@@ -136,15 +130,45 @@ void SpiralGatesGame::Init(bool activate)
 
 void SpiralGatesGame::ConfigureDifficulty(int difficulty)
 {
+	if (difficulty == 0)
+	{
+		m_Config.minNumGates = 2;
+		m_Config.selectorRotSpeed = 60.f;
+		m_Config.startEmptyArcLength = 120.f;
+		m_Config.finishArcLength = 30.f;
+		m_Config.gateArcLength = 40.f;
+		m_Config.minAngleBetweenGates = 60.f;
+		m_Config.maxAngleBetweenGates = 120.f;
+	}
+	else if (difficulty == 1)
+	{
+		m_Config.minNumGates = 2;
+		m_Config.selectorRotSpeed = 90.f;
+		m_Config.startEmptyArcLength = 90.f;
+		m_Config.finishArcLength = 30.f;
+		m_Config.gateArcLength = 30.f;
+		m_Config.minAngleBetweenGates = 40.f;
+		m_Config.maxAngleBetweenGates = 120.f;
+	}
+	else if (difficulty == 2)
+	{
+		m_Config.minNumGates = 3;
+		m_Config.selectorRotSpeed = 120.f;
+		m_Config.startEmptyArcLength = 60.f;
+		m_Config.finishArcLength = 30.f;
+		m_Config.gateArcLength = 30.f;
+		m_Config.minAngleBetweenGates = 20.f;
+		m_Config.maxAngleBetweenGates = 120.f;
+	}
+
+	m_Config.minNumGates = std::min(m_Config.minNumGates, m_MaxNumGates);
 }
 
 void SpiralGatesGame::CalculateTimeToComplete()
 {
 	float spiralArcLength{ std::abs(m_EndAngle - m_StartAngle) };
-	float timeToTravelSpiral{ spiralArcLength / m_SelectorRotSpeed };
-
+	float timeToTravelSpiral{ spiralArcLength / m_Config.selectorRotSpeed };
 	float multiplier{ m_MaxDifficulty - m_Difficulty + 1.f };
-
 	m_MaxTimeToComplete = multiplier * timeToTravelSpiral;
 }
 

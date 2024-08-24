@@ -17,7 +17,6 @@ public:
 private:
 	//Functions
 	void CreateNewBall();
-	void SetNextBallActive();
 	void DrawDeadline() const;
 
 	//Members

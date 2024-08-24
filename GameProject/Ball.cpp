@@ -5,12 +5,15 @@
 
 float Ball::s_FadeTime{ 0.5f };
 
-Ball::Ball(float size, const Point2f& pos, float speed, MiniGame* pMiniGame)
+Ball::Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, MiniGame* pMiniGame)
 	: m_State{ State::Idle }
 	, m_Points{ 0 }
 	, m_Rad{ size / 2.f }
 	, m_Pos{ pos }
-	, m_Speed{ speed }
+	, m_Acc{ 200.f }
+	, m_Speed{ idleSpeed }
+	, m_TargetSpeed{ m_Speed }
+	, m_ActiveSpeed{ activeSpeed }
 	, m_TimeToComplete{ 3.f }
 	, m_TimeSinceCompletion{ 0.f }
 	, m_Color{ Color4f{1.f, 1.f, 1.f, 1.f} }
@@ -40,6 +43,9 @@ void Ball::Draw() const
 
 void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
+	if (m_Speed != m_TargetSpeed)
+		UpdateSpeed(dt);
+
 	m_Pos.y += -m_Speed * dt;
 
 	switch (m_State)
@@ -78,6 +84,7 @@ void Ball::SetState(State newState)
 	{
 	case State::Active:
 		m_pMiniGame->Activate();
+		m_TargetSpeed = m_ActiveSpeed;
 		break;
 	case State::Completed:
 		m_Color = Color4f{ 0.f, 1.f, 0.f, 1.f };
@@ -86,4 +93,19 @@ void Ball::SetState(State newState)
 		m_Color = Color4f{ 1.f, 0.f, 0.f, 1.f };
 		break;
 	}
+}
+
+void Ball::UpdateSpeed(float dt)
+{
+	//move m_Speed towards m_TargetSpeed
+	float acc{ m_Acc };
+	//Point acc in direction of m_TargetSpeed
+	if (m_TargetSpeed > m_Speed)
+		acc = std::abs(m_Acc);
+	else //m_TargetSpeed < m_Speed
+		acc = -std::abs(m_Acc);
+
+	m_Speed += acc * dt;
+	if ((acc > 0.f && m_Speed > m_TargetSpeed) || (acc < 0.f && m_Speed < m_TargetSpeed))
+		m_Speed = m_TargetSpeed;
 }
