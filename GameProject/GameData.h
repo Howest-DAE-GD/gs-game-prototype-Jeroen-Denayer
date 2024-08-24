@@ -7,7 +7,6 @@ namespace GameData
 		bool pressedSpace;
 		bool pressedLeft;
 		bool pressedRight;
-		float deadLineHeight;
 	};
 
 	struct Feedback

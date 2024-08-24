@@ -18,7 +18,6 @@ Game::Game( const Window& window )
 	, m_Lives{ m_StartLives }
 	, m_TimeSinceLastPress{ 0.f }
 	, m_TimeToLoseSingleLife{ 8.f }
-	, m_DeadlineHeight{}
 	, m_PressingSpace{ false }
 {
 	Start();
@@ -59,7 +58,6 @@ void Game::Update( float dt )
 	{
 		m_PressingSpace = false;
 	}
-	input.deadLineHeight = m_DeadlineHeight;
 	GameData::Feedback feedback{};
 	m_pBallManager->Update(dt, input, feedback);
 	CheckFeedback(feedback);
@@ -70,30 +68,11 @@ void Game::Draw() const
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//Center x-axis on screen
-	glPushMatrix();
-	glTranslatef(m_Viewport.width / 2, 0.f, 0);
-	glScalef(1.f, 1.f, 1.f);
-	//#############
-
 	m_pBallManager->Draw();
-	//Point2f pos{ 0.f, m_Viewport.height * 0.5f };
-	//Spiral::DrawInfo drawInfo{ pos, 100.f, 50.f, 0.f,  2 * float(M_PI), 20.f, 10.f, Spiral::DrawMode::extrema };
-	//Spiral::DrawFilledSpiral(drawInfo);
-
-	//utils::SetColor(Color4f{ 0.f, 0.f, 1.f, 1.f });
-	//Spiral::DrawPartiallyFilledSpiral(drawInfo, float(M_PI) / 2.f, float(M_PI));
-	//utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
-	//Spiral::DrawSpiral(pos, 100.f, 50.f, 0.f,  2 * float(M_PI), 2.f);
-
-	//#############
-	glPopMatrix();
 
 	//Draw UI
 	float percOfLastLifeRemaining{ (m_TimeToLoseSingleLife - m_TimeSinceLastPress) / m_TimeToLoseSingleLife };
 	m_pUI->Draw(m_Score, m_Lives, m_MaxLives, percOfLastLifeRemaining);
-
-	DrawDeadline();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
@@ -155,11 +134,10 @@ void Game::Start()
 
 	if (m_pBallManager)
 		delete m_pBallManager;
-	float ballSize{ 200.f };
-	m_pBallManager = new BallManager(Point2f{ 0.f, GetViewPort().height + ballSize }, ballSize, 200.f);
+	float ballSize{ m_Viewport.width * 0.75f };
+	float deadLineHeight{ m_pUI->GetHeight() + ballSize };
+	m_pBallManager = new BallManager(m_Viewport, ballSize, deadLineHeight);
 	m_pBallManager->Start();
-
-	m_DeadlineHeight = m_pUI->GetHeight() + m_pBallManager->GetBallSizes()[0];
 }
 
 void Game::CheckFeedback(const GameData::Feedback& feedback)
@@ -186,15 +164,4 @@ void Game::DecreaseLives(int numLives)
 	m_Lives -= numLives;
 	if (m_Lives <= 0)
 		Start();
-}
-
-void Game::DrawDeadline() const
-{
-	utils::SetColor(Color4f{ 1.f, 1.f, 1.f, 1.f });
-	utils::DrawLine(Point2f{ 0.f, m_DeadlineHeight }, Point2f{ m_Viewport.width, m_DeadlineHeight });
-
-	float triangleHeight{20.f};
-	float triangleWidth{ 10.f };
-	utils::FillPolygon(std::vector<Point2f>{Point2f{ 0.f, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ triangleHeight, m_DeadlineHeight }, Point2f{ 0.f,m_DeadlineHeight - triangleWidth * 0.5f }});
-	utils::FillPolygon(std::vector<Point2f>{Point2f{ m_Viewport.width, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ m_Viewport.width - triangleHeight, m_DeadlineHeight }, Point2f{ m_Viewport.width,m_DeadlineHeight - triangleWidth * 0.5f }});
 }

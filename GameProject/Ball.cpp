@@ -40,12 +40,7 @@ void Ball::Draw() const
 
 void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
-	if (m_State == State::Idle)
-		return;
-
 	m_Pos.y += -m_Speed * dt;
-	if (m_Pos.y + m_Rad < input.deadLineHeight)
-		SetState(State::Missed);
 
 	switch (m_State)
 	{

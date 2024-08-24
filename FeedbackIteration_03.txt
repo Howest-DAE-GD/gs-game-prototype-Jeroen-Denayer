@@ -5,16 +5,21 @@ Iteration 2
 - added utils::DrawArcBand and utils::FillArcBand functions
 - added new color functionality to the engine that enables you to set a global color and alpha to overwrite other colors. Handy to force an entire object to draw in a single color
 - added a deadline, you need to solve each ball before it passes below this line.
+- moved all spiral/arc drawing functions from utils to separate Spiral class
+- balls are now only active when they are fully visible on the screen
+- balls are bigger so they are more easily visible
 
 ----------------------------
 ##### Target Questions #####
-
+- Does the new idea with the minigames inside of the balls work? Is it fun?
+- Is the difficulty scaling fun?
 
 --------------------
 ##### Feedback #####
-Playtester 1:
+Playtester 1: Elke
 
-Playtester 2:
+
+Playtester 2: Daan
 
 Playtester 3:
 

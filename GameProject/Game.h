@@ -34,7 +34,6 @@ private:
 	void CheckFeedback(const GameData::Feedback& feedback);
 	void IncreaseScore(int addedScore);
 	void DecreaseLives(int numLives);
-	void DrawDeadline() const;
 
 	//Members
 	const Rectf& m_Viewport;
@@ -49,7 +48,6 @@ private:
 	int m_Lives;
 	float m_TimeSinceLastPress;
 	float m_TimeToLoseSingleLife;
-	float m_DeadlineHeight;
 
 	bool m_PressingSpace;
 };
