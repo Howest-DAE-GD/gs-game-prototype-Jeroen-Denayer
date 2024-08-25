@@ -16,7 +16,7 @@ public:
 	Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, std::vector<MiniGame*>* pMiniGames);
 	~Ball();
 
-	void Draw() const;
+	void Draw(float deadlineHeight) const;
 	void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback);
 private:
 	//Functions
@@ -25,6 +25,7 @@ private:
 	void UpdateSpeed(float dt);
 	void ActivateNextMiniGame();
 	bool CompletedAllMiniGames();
+	float GetDistToReachActivationSpeed() const;
 
 	//Members
 	State m_State;
@@ -35,7 +36,7 @@ private:
 	float m_Speed;
 	float m_TargetSpeed;
 	float m_ActiveSpeed;
-	float m_DeadlineHeight;
+	float m_DistToReachActivationSpeed;
 	float m_TimeToComplete;
 	float m_TimeSinceCompletion;
 	Color4f m_Color;

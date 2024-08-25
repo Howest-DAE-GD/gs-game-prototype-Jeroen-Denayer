@@ -16,27 +16,20 @@ SetRotationGame::SetRotationGame(int difficulty, const DrawData& drawData)
 void SetRotationGame::Draw(Point2f pos) const
 {
 	float startAngle{ m_ValidAngle - m_Config.validAngleDeviation };
-	float endAgle{ m_ValidAngle + m_Config.validAngleDeviation };
+	float endAngle{ m_ValidAngle + m_Config.validAngleDeviation };
 
 	//Draw the valid angle region
 	utils::SetColor(Color3f{ 0.212f, 0.388f, 0.149f });
-	Spiral::DrawFilledArc(pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(startAngle), utils::Radians(endAgle));
+	Spiral::DrawFilledArc(pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(startAngle), utils::Radians(endAngle));
 
 	//Draw 2 lines to indicate the valid angle region
-	float linePercOfRad{ 0.5f };
-	Point2f p0{ utils::GetPointOnCircle(pos, m_DrawData.innerRad, startAngle) };
-	Point2f p1{ utils::GetPointOnCircle(pos, m_DrawData.outerRad, startAngle) };
-	Point2f p2{ utils::GetPointOnCircle(pos, m_DrawData.innerRad, endAgle) };
-	Point2f p3{ utils::GetPointOnCircle(pos, m_DrawData.outerRad, endAgle) };
-	utils::SetColor(Color3f{ 1.f, 1.f, 1.f });
-	utils::DrawLine(p0, p1, 2.f);
-	utils::DrawLine(p2, p3, 2.f);
+	utils::SetColor(Color3f{ 0.067f, 0.18f, 0.027f });
+	utils::DrawRadialLine(pos, m_DrawData.innerRad, m_DrawData.outerRad, startAngle);
+	utils::DrawRadialLine(pos, m_DrawData.innerRad, m_DrawData.outerRad, endAngle);
 
 	//Draw the player controlled line
-	Point2f lineStart{ utils::GetPointOnCircle(pos, m_DrawData.innerRad, m_SelectorAngle) };
-	Point2f lineEnd{ utils::GetPointOnCircle(pos, m_DrawData.outerRad, m_SelectorAngle) };
 	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });
-	utils::DrawLine(lineStart, lineEnd, 2.f);
+	utils::DrawRadialLine(pos, m_DrawData.innerRad, m_DrawData.outerRad, m_SelectorAngle, 3.f);
 }
 
 void SetRotationGame::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)

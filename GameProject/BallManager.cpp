@@ -7,7 +7,7 @@
 #include "SetRotationGame.h"
 #include "SelectColorGame.h"
 #include "SpiralGatesGame.h"
-#include "WallDodge.h"
+#include "WallDodgeGame.h"
 
 BallManager::BallManager(const Rectf& viewport, float ballSize, float deadLineHeight)
 	: m_Viewport{ viewport }
@@ -44,7 +44,7 @@ void BallManager::Draw() const
 
 	for (Ball* pBall : m_pBalls)
 		if (pBall)
-			pBall->Draw();
+			pBall->Draw(m_DeadlineHeight);
 }
 
 void BallManager::Update(float dt, GameData::Input& input, GameData::Feedback& feedback)
@@ -52,6 +52,7 @@ void BallManager::Update(float dt, GameData::Input& input, GameData::Feedback& f
 	if (!m_Active)
 		return;
 
+	input.activationHeight = m_Viewport.height;
 	input.deadlineHeight = m_DeadlineHeight;
 
 	//Update existing balls
@@ -62,9 +63,9 @@ void BallManager::Update(float dt, GameData::Input& input, GameData::Feedback& f
 
 		pBall->Update(dt, input, feedback);
 		float topPos{ pBall->m_Pos.y + pBall->m_Rad };
-		if (pBall->m_State == Ball::State::Idle && topPos < m_Viewport.height)
+		if (pBall->m_State == Ball::State::Idle && topPos < input.activationHeight + pBall->m_DistToReachActivationSpeed)
 			pBall->SetState(Ball::State::Active);
-		else if (pBall->m_State == Ball::State::Active && topPos < m_DeadlineHeight)
+		else if (pBall->m_State == Ball::State::Active && topPos < input.deadlineHeight)
 			pBall->SetState(Ball::State::Finished);
 	}
 
@@ -90,9 +91,9 @@ void BallManager::CreateNewBall()
 		delete m_pBalls[m_LastBallIdx];
 
 	int numMiniGames{ rand() % (m_MaxNumMiniGamesPerBall - m_MinNumMiniGamesPerBall + 1) + m_MinNumMiniGamesPerBall };
-	std::vector<MiniGame*>* pMiniGames{ GetMiniGamesVector(1) };
-	MiniGame::DrawData drawData{ m_BallSize / 4.f, m_BallSize / 2.f, m_BallSize / 4.f };
-	(*pMiniGames)[0] = new WallDodge(m_Difficulty, drawData);
+	std::vector<MiniGame*>* pMiniGames{ GetMiniGamesVector(numMiniGames) };
+	//MiniGame::DrawData drawData{ m_BallSize / 4.f, m_BallSize / 2.f, m_BallSize / 4.f };
+	//(*pMiniGames)[0] = new WallDodge(m_Difficulty, drawData);
 	float timeToComplete{ CalculateMiniGamesTime(*pMiniGames) };
 
 	float idleSpeed{ 100.f };
@@ -128,7 +129,7 @@ std::vector<MiniGame*>* BallManager::GetMiniGamesVector(int numMiniGames)
 	{
 		//Choose a random minigame
 		MiniGame*& pMiniGame{ (*pMiniGames)[i] };
-		int typeIdx{ rand() % 3 };
+		int typeIdx{ rand() % 4 };
 		switch (MiniGame::Type(typeIdx))
 		{
 		case MiniGame::Type::SelectColor:
@@ -141,7 +142,7 @@ std::vector<MiniGame*>* BallManager::GetMiniGamesVector(int numMiniGames)
 			pMiniGame = new SpiralGatesGame(m_Difficulty, drawData);
 			break;
 		case MiniGame::Type::WallDodge:
-			pMiniGame = new WallDodge(m_Difficulty, drawData);
+			pMiniGame = new WallDodgeGame(m_Difficulty, drawData);
 			break;
 		}
 	}

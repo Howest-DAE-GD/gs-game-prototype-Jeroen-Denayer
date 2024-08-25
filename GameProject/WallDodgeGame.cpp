@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "WallDodge.h"
+#include "WallDodgeGame.h"
 #include "Spiral.h"
 
-WallDodge::WallDodge(int difficulty, const DrawData& drawData)
+WallDodgeGame::WallDodgeGame(int difficulty, const DrawData& drawData)
 	:MiniGame(MiniGame::Type::WallDodge, difficulty, 0, drawData)
 	, m_Dir{}
 	, m_StartOnInside{}
@@ -13,11 +13,12 @@ WallDodge::WallDodge(int difficulty, const DrawData& drawData)
 	, m_BallSizePercOfLane{ 0.9f }
 	, m_AreaStartAngle{}
 	, m_AreaEndAngle{}
+	, m_StartAngle{}
 	, m_FinishAngle{}
 	, m_AreaGapArcLength{ 45.f }
-	, m_MaxNumWalls{ 5 }
-	, m_MinNumWalls{ 15 }
-	, m_NumWallsPerPoint{ 5 }
+	, m_MinNumWalls{ 3 }
+	, m_MaxNumWalls{ 9 }
+	, m_NumWallsPerPoint{ 3 }
 	, m_NextWallIdx{}
 	, m_Walls{}
 	, m_Config{}
@@ -25,7 +26,7 @@ WallDodge::WallDodge(int difficulty, const DrawData& drawData)
 	Init(m_Difficulty);
 }
 
-void WallDodge::Draw(Point2f pos) const
+void WallDodgeGame::Draw(Point2f pos) const
 {
 	glPushMatrix();
 	glTranslatef(pos.x, pos.y, 0.f);
@@ -69,8 +70,11 @@ void WallDodge::Draw(Point2f pos) const
 	glPopMatrix();
 }
 
-void WallDodge::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
+void WallDodgeGame::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
+	if (m_State == State::Idle)
+		return;
+
 	if (input.pressedSpace)
 		Click(feedback);
 
@@ -103,7 +107,7 @@ void WallDodge::Update(float dt, const GameData::Input& input, GameData::Feedbac
 	}
 }
 
-void WallDodge::Init(int difficulty, bool activate)
+void WallDodgeGame::Init(int difficulty, bool activate)
 {
 	ConfigureDifficulty(difficulty);
 
@@ -114,6 +118,7 @@ void WallDodge::Init(int difficulty, bool activate)
 	m_BallAngle = float(rand() % 360);
 	UpdateBallAngle(0); //Sets m_BallFrontAngle and m_BallBackAngle;
 
+	m_StartAngle = m_BallBackAngle;
 	m_AreaStartAngle = m_BallBackAngle;
 	float maxEndAngle{ m_AreaStartAngle + 360 - m_AreaGapArcLength };
 	m_AreaEndAngle = std::min(m_AreaStartAngle + m_Config.lookAheadArcLength, maxEndAngle);
@@ -141,7 +146,7 @@ void WallDodge::Init(int difficulty, bool activate)
 	CalculateTimeToComplete();
 }
 
-void WallDodge::Click(GameData::Feedback& feedback)
+void WallDodgeGame::Click(GameData::Feedback& feedback)
 {
 	//Check if the ball is past the last wall already
 	if (m_NextWallIdx > m_Walls.size() - 1)
@@ -166,12 +171,12 @@ void WallDodge::Click(GameData::Feedback& feedback)
 		++m_NextWallIdx;
 }
 
-void WallDodge::ConfigureDifficulty(int difficulty)
+void WallDodgeGame::ConfigureDifficulty(int difficulty)
 {
 	if (difficulty == 0)
 	{
 		m_Config.ballRotSpeed = 60.f;
-		m_Config.startEmptyArcLength = 120.f;
+		m_Config.startEmptyArcLength = 60.f;
 		m_Config.finishArcLength = 45.f;
 		m_Config.minAngleBetweenWalls = 60.f;
 		m_Config.maxAngleBetweenWalls = 90.f;
@@ -183,12 +188,12 @@ void WallDodge::ConfigureDifficulty(int difficulty)
 	m_Config.lookAheadArcLength = std::min(360.f - m_AreaGapArcLength, m_Config.lookAheadArcLength);
 }
 
-void WallDodge::CalculateTimeToComplete()
+void WallDodgeGame::CalculateTimeToComplete()
 {
-	m_MaxTimeToComplete = (m_FinishAngle - m_AreaStartAngle) / m_Config.ballRotSpeed;
+	m_MaxTimeToComplete = (m_FinishAngle - m_StartAngle) / m_Config.ballRotSpeed;
 }
 
-void WallDodge::UpdateBallAngle(float deltaAngle)
+void WallDodgeGame::UpdateBallAngle(float deltaAngle)
 {
 	m_BallAngle += deltaAngle;
 
@@ -201,7 +206,7 @@ void WallDodge::UpdateBallAngle(float deltaAngle)
 	m_BallBackAngle = m_BallAngle - angleDiff;
 }
 
-bool WallDodge::IsBallOverlappingWall(int ballIdx)
+bool WallDodgeGame::IsBallOverlappingWall(int ballIdx)
 {
 	const Wall& wall{ m_Walls[m_NextWallIdx] };
 	return ballIdx >= 0 && ballIdx < m_Walls.size() && m_BallOnInside == wall.onInside &&

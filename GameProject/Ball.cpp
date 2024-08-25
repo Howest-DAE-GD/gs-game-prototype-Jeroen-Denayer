@@ -15,6 +15,7 @@ Ball::Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, s
 	, m_Speed{ idleSpeed }
 	, m_TargetSpeed{ m_Speed }
 	, m_ActiveSpeed{ activeSpeed }
+	, m_DistToReachActivationSpeed{ GetDistToReachActivationSpeed() }
 	, m_TimeToComplete{ 3.f }
 	, m_TimeSinceCompletion{ 0.f }
 	, m_Color{ Color4f{1.f, 1.f, 1.f, 1.f} }
@@ -30,7 +31,7 @@ Ball::~Ball()
 			delete pMiniGame;
 } 
 
-void Ball::Draw() const
+void Ball::Draw(float deadlineHeight) const
 {
 	utils::SetGlobalAlpha(m_Color.a);
 
@@ -52,9 +53,9 @@ void Ball::Draw() const
 
 	//Draw outline below m_DeadlineHeight
 	float bottomPos{ m_Pos.y - m_Rad };
-	if (bottomPos < m_DeadlineHeight)
+	if (bottomPos < deadlineHeight)
 	{
-		float diff{ (m_DeadlineHeight - bottomPos) };
+		float diff{ (deadlineHeight - bottomPos) };
 		float percOfDiameter{ std::min(1.f, diff / (2 * m_Rad)) };
 		float sin{ 2.f * percOfDiameter - 1.f }; //remap percOfDiameter 0=>1 to sin -1=>1
 		float endAngle{ std::asinf(sin) };
@@ -68,18 +69,19 @@ void Ball::Draw() const
 
 void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
-	m_DeadlineHeight = input.deadlineHeight;
-
 	if (m_Speed != m_TargetSpeed)
 	{
-		m_Speed = m_TargetSpeed;
-		//UpdateSpeed(dt);
+		//m_Speed = m_TargetSpeed;
+		//Interpolating speed sometimes makes it that the ball arrives to soon
+		UpdateSpeed(dt);
 	}
 
 	m_Pos.y += -m_Speed * dt;
 
 	switch (m_State)
 	{
+	case State::Idle:
+		break;
 	case State::Active:
 	{
 		MiniGame* pMiniGame{ (*m_pMiniGames)[m_ActiveMiniGameIdx] };
@@ -173,6 +175,7 @@ void Ball::SetState(State newState)
 		break;
 	}
 	case State::Finished:
+		int i = 0;
 		break;
 	}
 }
@@ -211,4 +214,10 @@ bool Ball::CompletedAllMiniGames()
 		}
 	}
 	return completedAll;
+}
+
+float Ball::GetDistToReachActivationSpeed() const
+{
+	//Vf^2 = Vi^2 + 2ad => d = (Vf^2 - Vi^2) / (2a)
+	return std::abs((m_ActiveSpeed * m_ActiveSpeed - m_Speed * m_Speed) / (2 * m_Acc));
 }

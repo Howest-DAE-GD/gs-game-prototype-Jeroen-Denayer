@@ -113,6 +113,13 @@ void utils::DrawLine( const Point2f& p1, const Point2f& p2, float lineWidth )
 	DrawLine( p1.x, p1.y, p2.x, p2.y, lineWidth );
 }
 
+void utils::DrawRadialLine(const Point2f& center, float innerRad, float outerRad, float angle, float lineWidth)
+{
+	Point2f p0{ utils::GetPointOnCircle(center, innerRad, angle) };
+	Point2f p1{ utils::GetPointOnCircle(center, outerRad, angle) };
+	utils::DrawLine(p0, p1, lineWidth);
+}
+
 void utils::DrawTriangle(const Point2f& p1, const Point2f& p2, const Point2f& p3, float lineWidth)
 {
 	glLineWidth(lineWidth);

@@ -12,7 +12,10 @@ Iteration 3
 - added struct Config{} to all minigames, this config changes depending on the difficulty
 - added ConfigureDifficulty() to all minigames
 - added smooth interpolation for the ball speed
+- added WallDodge minigame
 
+To-Do:
+- add WallDodgeGame start and finish colors
 ----------------------------
 ##### Target Questions #####
 - Does the new idea with the minigames inside of the balls work? Is it fun?

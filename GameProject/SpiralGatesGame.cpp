@@ -28,8 +28,11 @@ void SpiralGatesGame::Draw(Point2f pos) const
 	//Draw gates
 	for (int i{}; i < m_NumUsedGates; ++i)
 	{
-		utils::SetColor(Color3f{ 0.741f, 0.537f, 0.204f });
 		const Gate& gate{ m_Gates[i] };
+		if (gate.isOpen)
+			utils::SetColor(Color3f{ 0.208f, 0.741f, 0.224f });
+		else
+			utils::SetColor(Color3f{ 0.741f, 0.537f, 0.204f });
 		Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(gate.startAngle), utils::Radians(gate.endAngle));
 		Spiral::SpiralAngleInfo angleInfo{ Spiral::GetSpiralAngleInfo(drawInfo, utils::Radians(gate.endAngle)) };
 		if (!gate.isOpen)
@@ -39,12 +42,9 @@ void SpiralGatesGame::Draw(Point2f pos) const
 		}
 	}
 
-	//Draw start
-	utils::SetColor(Color3f{ 0.f, 1.f, 0.f });
+	//Draw start and finish
+	utils::SetColor(Color3f{ 0.f, 0.9f, 1.f });
 	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_StartAngle), utils::Radians(m_StartAngle + m_SpiralDir * 10.f));
-
-	//Draw finish
-	utils::SetColor(Color3f{ 0.7f, 0.f, 0.f });
 	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_EndAngle - m_SpiralDir * 10.f), utils::Radians(m_EndAngle));
 
 	//Draw the selector

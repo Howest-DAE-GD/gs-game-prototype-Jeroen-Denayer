@@ -1,11 +1,11 @@
 #pragma once
 #include "MiniGame.h"
 
-class WallDodge final
+class WallDodgeGame final
 	:public MiniGame
 {
 public:
-	WallDodge(int difficulty, const DrawData& drawData);
+	WallDodgeGame(int difficulty, const DrawData& drawData);
 
 	virtual void Draw(Point2f pos) const override;
 	virtual void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback) override;
@@ -46,10 +46,11 @@ private:
 	float m_BallSizePercOfLane;
 	float m_AreaStartAngle;
 	float m_AreaEndAngle;
+	float m_StartAngle;
 	float m_FinishAngle;
 	float m_AreaGapArcLength;
-	int m_MaxNumWalls;
 	int m_MinNumWalls;
+	int m_MaxNumWalls;
 	int m_NumWallsPerPoint;
 	int m_NextWallIdx;
 	std::vector<Wall> m_Walls;

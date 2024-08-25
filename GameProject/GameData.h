@@ -7,6 +7,7 @@ namespace GameData
 		bool pressedSpace;
 		bool pressedLeft;
 		bool pressedRight;
+		float activationHeight;
 		float deadlineHeight;
 	};
 

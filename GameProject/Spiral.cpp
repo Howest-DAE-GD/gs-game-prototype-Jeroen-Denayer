@@ -4,9 +4,7 @@
 void Spiral::DrawLineOnSpiral(const DrawInfo& info, float angle, float lineWidth)
 {
 	SpiralAngleInfo angleInfo{ Spiral::GetSpiralAngleInfo(info, utils::Radians(angle)) };
-	Point2f p0{ info.center.x + angleInfo.outerRad * std::cosf(utils::Radians(angle)), info.center.y + angleInfo.outerRad * std::sinf(utils::Radians(angle)) };
-	Point2f p1{ info.center.x + angleInfo.innerRad * std::cosf(utils::Radians(angle)), info.center.y + angleInfo.innerRad * std::sinf(utils::Radians(angle)) };
-	utils::DrawLine(p0, p1, lineWidth);
+	utils::DrawRadialLine(info.center, angleInfo.innerRad, angleInfo.outerRad, angle, lineWidth);
 }
 
 void Spiral::DrawSpiralVertices(const Point2f& center, float startRad, float endRad, float startAngle, float endAngle)

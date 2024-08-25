@@ -45,10 +45,8 @@ void SelectColorGame::Draw(Point2f pos) const
 	utils::FillEllipse(pos, m_DrawData.centerRad, m_DrawData.centerRad);
 
 	//Draw selector
-	Point2f p0{ utils::GetPointOnCircle(pos, m_DrawData.innerRad, m_SelectorAngle) };
-	Point2f p1{ utils::GetPointOnCircle(pos, m_DrawData.outerRad, m_SelectorAngle) };
 	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });
-	utils::DrawLine(p0, p1, 3.f);
+	utils::DrawRadialLine(pos, m_DrawData.innerRad, m_DrawData.outerRad, m_SelectorAngle, 3.f);
 }
 
 void SelectColorGame::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
