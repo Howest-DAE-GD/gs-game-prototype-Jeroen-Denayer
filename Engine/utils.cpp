@@ -789,4 +789,16 @@ float utils::Radians(float degrees)
 	return degrees * float(M_PI) / 180.f;
 }
 
+bool utils::IsAngleBetween(float angle, float startAngle, float endAngle)
+{
+	if (startAngle > endAngle)
+		std::swap(startAngle, endAngle);
+	return angle >= startAngle && angle <= endAngle;
+}
+
+Point2f utils::GetPointOnCircle(const Point2f center, float rad, float angle)
+{
+	return 	Point2f{ center.x + rad * std::cosf(utils::Radians(angle)), center.y + rad * std::sinf(utils::Radians(angle)) };
+}
+
 #pragma endregion CollisionFunctionality

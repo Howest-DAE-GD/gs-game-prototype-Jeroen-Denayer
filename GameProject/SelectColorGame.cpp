@@ -14,8 +14,8 @@ const std::vector<Color3f> SelectColorGame::s_Colors{
 	Color3f{0.78f, 0.082f, 0.522f}, //pink
 };
 
-SelectColorGame::SelectColorGame(int difficulty)
-	:MiniGame(MiniGame::Type::SelectColor, difficulty, 2)
+SelectColorGame::SelectColorGame(int difficulty, const DrawData& drawData)
+	:MiniGame(MiniGame::Type::SelectColor, difficulty, 2, drawData)
 	, m_ValidColorIdx{}
 	, m_MaxNumColorRegions{ 4 }
 	, m_MinNumColorRegions{ 2 }
@@ -28,7 +28,7 @@ SelectColorGame::SelectColorGame(int difficulty)
 	Init(m_Difficulty);
 }
 
-void SelectColorGame::Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const
+void SelectColorGame::Draw(Point2f pos) const
 {
 	//Draw color regions
 	for (int i{}; i < m_NumUsedColorRegions; ++i)
@@ -37,16 +37,16 @@ void SelectColorGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 		float fromAngle{ colorRegion.angle - colorRegion.angleDeviation };
 		float tillAngle{ colorRegion.angle + colorRegion.angleDeviation };
 		utils::SetColor(s_Colors[colorRegion.colorIdx]);
-		Spiral::DrawFilledArc(pos, innerRad, outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
+		Spiral::DrawFilledArc(pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
 	}
 
 	//Draw circle with the correct color that needs to be matched
 	utils::SetColor(s_Colors[m_ValidColorIdx]);
-	utils::FillEllipse(pos, centerRadius, centerRadius);
+	utils::FillEllipse(pos, m_DrawData.centerRad, m_DrawData.centerRad);
 
 	//Draw selector
-	Point2f p0{ pos.x + std::cosf(utils::Radians(m_SelectorAngle)) * innerRad, pos.y + std::sinf(utils::Radians(m_SelectorAngle)) * innerRad };
-	Point2f p1{ pos.x + std::cosf(utils::Radians(m_SelectorAngle)) * outerRad, pos.y + std::sinf(utils::Radians(m_SelectorAngle)) * outerRad };
+	Point2f p0{ utils::GetPointOnCircle(pos, m_DrawData.innerRad, m_SelectorAngle) };
+	Point2f p1{ utils::GetPointOnCircle(pos, m_DrawData.outerRad, m_SelectorAngle) };
 	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });
 	utils::DrawLine(p0, p1, 3.f);
 }

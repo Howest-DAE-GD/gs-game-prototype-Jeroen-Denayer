@@ -11,16 +11,6 @@ namespace utils
 	extern bool glUseGlobalColor;
 	extern bool glUseGlobalAlpha;
 
-	struct SpiralRadInfo
-	{
-		float min;
-		float max;
-		float startInner;
-		float startOuter;
-		float endInner;
-		float endOuter;
-	};
-
 	/*
 	Use this function to draw with a custom alpha
 	Parameters:
@@ -121,5 +111,11 @@ namespace utils
 	float NormalizeAngle(float angle);
 	float Degrees(float radians);
 	float Radians(float degrees);
+	bool IsAngleBetween(float angle, float startAngle, float endAngle);
+	/*
+	Parameters:
+	- angle: in degrees, is converted to radians
+	*/
+	Point2f GetPointOnCircle(const Point2f center, float rad, float angle);
 #pragma endregion Other
 }

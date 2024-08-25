@@ -7,6 +7,7 @@
 #include "SetRotationGame.h"
 #include "SelectColorGame.h"
 #include "SpiralGatesGame.h"
+#include "WallDodge.h"
 
 BallManager::BallManager(const Rectf& viewport, float ballSize, float deadLineHeight)
 	: m_Viewport{ viewport }
@@ -46,10 +47,12 @@ void BallManager::Draw() const
 			pBall->Draw();
 }
 
-void BallManager::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
+void BallManager::Update(float dt, GameData::Input& input, GameData::Feedback& feedback)
 {
 	if (!m_Active)
 		return;
+
+	input.deadlineHeight = m_DeadlineHeight;
 
 	//Update existing balls
 	for (Ball* pBall : m_pBalls)
@@ -87,7 +90,9 @@ void BallManager::CreateNewBall()
 		delete m_pBalls[m_LastBallIdx];
 
 	int numMiniGames{ rand() % (m_MaxNumMiniGamesPerBall - m_MinNumMiniGamesPerBall + 1) + m_MinNumMiniGamesPerBall };
-	std::vector<MiniGame*>* pMiniGames{ GetMiniGamesVector(numMiniGames) };
+	std::vector<MiniGame*>* pMiniGames{ GetMiniGamesVector(1) };
+	MiniGame::DrawData drawData{ m_BallSize / 4.f, m_BallSize / 2.f, m_BallSize / 4.f };
+	(*pMiniGames)[0] = new WallDodge(m_Difficulty, drawData);
 	float timeToComplete{ CalculateMiniGamesTime(*pMiniGames) };
 
 	float idleSpeed{ 100.f };
@@ -103,11 +108,12 @@ void BallManager::CreateNewBall()
 
 void BallManager::DrawDeadline() const
 {
-	utils::SetColor(Color4f{ 1.f, 1.f, 1.f, 1.f });
+	utils::SetColor(Color4f{ 0.4f, 0.4f, 0.4f, 0.4f });
 	utils::DrawLine(Point2f{ 0.f, m_DeadlineHeight }, Point2f{ m_Viewport.width, m_DeadlineHeight });
 
-	float triangleHeight{ 20.f };
-	float triangleWidth{ 10.f };
+	float triangleHeight{ 30.f };
+	float triangleWidth{ 15.f };
+	utils::SetColor(Color4f{ 0.8f, 0.8f, 0.8f, 0.8f });
 	utils::FillPolygon(std::vector<Point2f>{Point2f{ 0.f, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ triangleHeight, m_DeadlineHeight }, Point2f{ 0.f,m_DeadlineHeight - triangleWidth * 0.5f }});
 	utils::FillPolygon(std::vector<Point2f>{Point2f{ m_Viewport.width, m_DeadlineHeight + triangleWidth * 0.5f }, Point2f{ m_Viewport.width - triangleHeight, m_DeadlineHeight }, Point2f{ m_Viewport.width,m_DeadlineHeight - triangleWidth * 0.5f }});
 }
@@ -115,6 +121,8 @@ void BallManager::DrawDeadline() const
 std::vector<MiniGame*>* BallManager::GetMiniGamesVector(int numMiniGames)
 {
 	std::vector<MiniGame*>* pMiniGames{ new std::vector<MiniGame*>(numMiniGames) };
+
+	MiniGame::DrawData drawData{ m_BallSize / 4.f, m_BallSize / 2.f, m_BallSize / 4.f };
 
 	for (int i{}; i < pMiniGames->size(); ++i)
 	{
@@ -124,13 +132,16 @@ std::vector<MiniGame*>* BallManager::GetMiniGamesVector(int numMiniGames)
 		switch (MiniGame::Type(typeIdx))
 		{
 		case MiniGame::Type::SelectColor:
-			pMiniGame = new SelectColorGame(m_Difficulty);
+			pMiniGame = new SelectColorGame(m_Difficulty, drawData);
 			break;
 		case MiniGame::Type::SetRotation:
-			pMiniGame = new SetRotationGame(m_Difficulty);
+			pMiniGame = new SetRotationGame(m_Difficulty, drawData);
 			break;
 		case MiniGame::Type::SpiralGates:
-			pMiniGame = new SpiralGatesGame(m_Difficulty);
+			pMiniGame = new SpiralGatesGame(m_Difficulty, drawData);
+			break;
+		case MiniGame::Type::WallDodge:
+			pMiniGame = new WallDodge(m_Difficulty, drawData);
 			break;
 		}
 	}

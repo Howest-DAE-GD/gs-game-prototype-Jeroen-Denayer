@@ -51,6 +51,9 @@
     <ClCompile Include="Spiral.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WallDodge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Spiral.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WallDodge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,7 @@ namespace GameData
 		bool pressedSpace;
 		bool pressedLeft;
 		bool pressedRight;
+		float deadlineHeight;
 	};
 
 	struct Feedback
@@ -18,4 +19,3 @@ namespace GameData
 		bool failedMiniGame;
 	};
 }
-

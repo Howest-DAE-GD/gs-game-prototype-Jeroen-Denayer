@@ -7,9 +7,11 @@ Iteration 4
 - colored the indicators based on if the minigame is Idle, Active, Completed or Failed
 - added multiplier
 - added colored background to the balls
+- added scorching on the outside of each ball in an arc for the part that is below the deadLineHeight
+- added WallDodge minigame
 
 To-Do:
-- adding scorching on the outside of each ball in an arc for the part that is below the deadLineHeight
+- fix speed interpolation messing with time of arrival at deadlineheight
 - add probability that balls contain an extra life, only added when the ball is perfectly completed
 
 ----------------------------

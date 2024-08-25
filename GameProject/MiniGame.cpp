@@ -1,13 +1,14 @@
 #include "pch.h"
 #include "MiniGame.h"
 
-MiniGame::MiniGame(Type type, int difficulty, int maxDifficulty)
+MiniGame::MiniGame(Type type, int difficulty, int maxDifficulty, const DrawData& drawData)
 	: m_Type{ type }
 	, m_State{ State::Idle }
 	, m_MaxDifficulty{ maxDifficulty }
 	, m_Difficulty{ std::min(difficulty, m_MaxDifficulty) }
 	, m_Points{ 0 }
 	, m_MaxTimeToComplete{ 0.1f }
+	, m_DrawData{ drawData }
 {
 }
 

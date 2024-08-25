@@ -13,8 +13,6 @@ public:
 		Idle, Active, Finished
 	};
 
-
-
 	Ball(const Point2f& pos, float size, float idleSpeed, float activeSpeed, std::vector<MiniGame*>* pMiniGames);
 	~Ball();
 
@@ -25,7 +23,8 @@ private:
 	void DrawMiniGameIndicators(float innerRad) const;
 	void SetState(State newState);
 	void UpdateSpeed(float dt);
-	void ActivateNextMiniGame(GameData::Feedback& feedback);
+	void ActivateNextMiniGame();
+	bool CompletedAllMiniGames();
 
 	//Members
 	State m_State;
@@ -36,6 +35,7 @@ private:
 	float m_Speed;
 	float m_TargetSpeed;
 	float m_ActiveSpeed;
+	float m_DeadlineHeight;
 	float m_TimeToComplete;
 	float m_TimeSinceCompletion;
 	Color4f m_Color;

@@ -6,7 +6,7 @@
 UI::UI(const Rectf& viewport)
 	: m_Viewport{ viewport }
 	, m_pNumberTextures{ std::vector<Texture*>(10) }
-	, m_LivesBarHeight{ 30.f }
+	, m_LivesBarHeight{ 20.f }
 	, m_ScoreBarHeight{ m_Viewport.height / 20.f }
 {
 	for (int i{}; i < 10; ++i)
@@ -23,7 +23,7 @@ void UI::Draw(std::int64_t score, int multiplier, int lives, int maxLives, float
 {
 	glPushMatrix();
 	DrawLives(lives, maxLives, percOfLastLifeRemaining, m_LivesBarHeight);
-	glTranslatef(0.f, m_ScoreBarHeight, 0.f);
+	glTranslatef(0.f, m_LivesBarHeight, 0.f);
 	DrawScore(score, multiplier, m_ScoreBarHeight);
 	glPopMatrix();
 }
@@ -70,13 +70,14 @@ void UI::DrawLives(int lives, int maxLives, float percOfLastLifeRemaining, float
 	float padding{ m_Viewport.width * 0.05f };
 	float lifeWidth{ (m_Viewport.width - padding * 2) / maxLives };
 
-	//Draw the lives
+	//Draw all lives except the last one
 	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
 	for (int i{}; i < lives - 1; ++i)
 	{
 		float leftPos{ padding + i * lifeWidth };
 		utils::FillRect(leftPos, 0.f, lifeWidth, drawHeight);
 	}
+
 	//Draw the last life
 	if (lives > 0)
 	{

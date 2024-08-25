@@ -6,9 +6,9 @@ class SpiralGatesGame final
 	:public MiniGame
 {
 public:
-	SpiralGatesGame(int difficulty);
+	SpiralGatesGame(int difficulty, const DrawData& drawData);
 
-	virtual void Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const override;
+	virtual void Draw(Point2f pos) const override;
 	virtual void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback) override;
 	virtual void Init(int difficulty, bool activate = false) override;
 private:

@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "SpiralGatesGame.h"
 
-SpiralGatesGame::SpiralGatesGame(int difficulty)
-	:MiniGame(MiniGame::Type::SpiralGates, difficulty, 2)
+SpiralGatesGame::SpiralGatesGame(int difficulty, const DrawData& drawData)
+	:MiniGame(MiniGame::Type::SpiralGates, difficulty, 2, drawData)
 	, m_MaxNumGates{ 4 }
 	, m_NumUsedGates{}
 	, m_Gates{ std::vector<Gate>(m_MaxNumGates) }
@@ -17,12 +17,12 @@ SpiralGatesGame::SpiralGatesGame(int difficulty)
 	Init(m_Difficulty);
 }
 
-void SpiralGatesGame::Draw(Point2f pos, float innerRad, float outerRad, float centerRadius) const
+void SpiralGatesGame::Draw(Point2f pos) const
 {
 	//Draw main spiral
-	float spiralWidth{ (outerRad - innerRad) / (m_Loops + 1) * 0.9f };
+	float spiralWidth{ (m_DrawData.outerRad - m_DrawData.innerRad) / (m_Loops + 1) * 0.9f };
 	utils::SetColor(Color3f{ 0.31f, 0.216f, 0.055f });
-	Spiral::DrawInfo drawInfo{ pos, innerRad, outerRad, utils::Radians(m_StartAngle), utils::Radians(m_EndAngle), spiralWidth, spiralWidth, Spiral::DrawMode::extrema };
+	Spiral::DrawInfo drawInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(m_StartAngle), utils::Radians(m_EndAngle), spiralWidth, spiralWidth, Spiral::DrawMode::extrema };
 	Spiral::DrawFilledSpiral(drawInfo);
 
 	//Draw gates
@@ -39,13 +39,13 @@ void SpiralGatesGame::Draw(Point2f pos, float innerRad, float outerRad, float ce
 		}
 	}
 
-	//Draw finish
-	utils::SetColor(Color3f{ 0.f, 1.f, 0.f });
-	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_EndAngle - m_SpiralDir * 10.f), utils::Radians(m_EndAngle));
-
 	//Draw start
-	utils::SetColor(Color3f{ 0.7f, 0.f, 0.f });
+	utils::SetColor(Color3f{ 0.f, 1.f, 0.f });
 	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_StartAngle), utils::Radians(m_StartAngle + m_SpiralDir * 10.f));
+
+	//Draw finish
+	utils::SetColor(Color3f{ 0.7f, 0.f, 0.f });
+	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_EndAngle - m_SpiralDir * 10.f), utils::Radians(m_EndAngle));
 
 	//Draw the selector
 	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });

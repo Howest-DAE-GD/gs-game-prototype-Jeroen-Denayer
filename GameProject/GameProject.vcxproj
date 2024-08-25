@@ -205,6 +205,7 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClCompile Include="Spiral.cpp" />
     <ClCompile Include="SpiralGatesGame.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="WallDodge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
@@ -218,6 +219,7 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClInclude Include="Spiral.h" />
     <ClInclude Include="SpiralGatesGame.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="WallDodge.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

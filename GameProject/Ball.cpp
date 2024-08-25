@@ -34,26 +34,47 @@ void Ball::Draw() const
 {
 	utils::SetGlobalAlpha(m_Color.a);
 
+	//Draw filled ball
 	utils::SetColor(Color3f{0.15f, 0.15f, 0.15f });
 	utils::FillEllipse(m_Pos, m_Rad, m_Rad);
 
+	//Draw MiniGame
 	float innerRad{ m_Rad * 0.5f };
 	MiniGame* pMiniGame{ (*m_pMiniGames)[m_ActiveMiniGameIdx] };
-	pMiniGame->Draw(m_Pos, innerRad, m_Rad, innerRad);
+	pMiniGame->Draw(m_Pos);
 
 	DrawMiniGameIndicators(m_Rad);
 
+	//Draw outlines
 	utils::SetColor(m_Color);
 	utils::DrawEllipse(m_Pos, innerRad, innerRad, 2.f);
 	utils::DrawEllipse(m_Pos, m_Rad, m_Rad, 2.f);
+
+	//Draw outline below m_DeadlineHeight
+	float bottomPos{ m_Pos.y - m_Rad };
+	if (bottomPos < m_DeadlineHeight)
+	{
+		float diff{ (m_DeadlineHeight - bottomPos) };
+		float percOfDiameter{ std::min(1.f, diff / (2 * m_Rad)) };
+		float sin{ 2.f * percOfDiameter - 1.f }; //remap percOfDiameter 0=>1 to sin -1=>1
+		float endAngle{ std::asinf(sin) };
+		float startAngle{ -float(M_PI) - endAngle }; //mirror endAngle around y-axis
+		utils::SetColor(Color3f{ 0.8f, 0.f, 0.f });
+		utils::DrawArc(m_Pos, m_Rad, m_Rad, startAngle, endAngle, 3.f);
+	}
 
 	utils::UseGlobalAlpha(false);
 }
 
 void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& feedback)
 {
+	m_DeadlineHeight = input.deadlineHeight;
+
 	if (m_Speed != m_TargetSpeed)
-		UpdateSpeed(dt);
+	{
+		m_Speed = m_TargetSpeed;
+		//UpdateSpeed(dt);
+	}
 
 	m_Pos.y += -m_Speed * dt;
 
@@ -66,7 +87,15 @@ void Ball::Update(float dt, const GameData::Input& input, GameData::Feedback& fe
 		if (pMiniGame->GetState() == MiniGame::State::Completed || pMiniGame->GetState() == MiniGame::State::Failed)
 		{
 			m_Points += pMiniGame->GetPoints();
-			ActivateNextMiniGame(feedback);
+			if (m_ActiveMiniGameIdx < m_pMiniGames->size() - 1)
+				ActivateNextMiniGame();
+			else
+			{
+				feedback.finishedBall = true;
+				feedback.totalBallPoints = m_Points;
+				feedback.perfectBall = CompletedAllMiniGames();
+				SetState(State::Finished);
+			}
 		}
 		break;
 	}
@@ -143,6 +172,8 @@ void Ball::SetState(State newState)
 		m_TargetSpeed = m_ActiveSpeed;
 		break;
 	}
+	case State::Finished:
+		break;
 	}
 }
 
@@ -161,28 +192,23 @@ void Ball::UpdateSpeed(float dt)
 		m_Speed = m_TargetSpeed;
 }
 
-void Ball::ActivateNextMiniGame(GameData::Feedback& feedback)
+void Ball::ActivateNextMiniGame()
 {
-	if (m_ActiveMiniGameIdx < m_pMiniGames->size() - 1)
+	++m_ActiveMiniGameIdx;
+	MiniGame* pMiniGame{ (*m_pMiniGames)[m_ActiveMiniGameIdx] };
+	pMiniGame->Activate();
+}
+
+bool Ball::CompletedAllMiniGames()
+{
+	bool completedAll{ true };
+	for (const MiniGame* pMiniGame : *m_pMiniGames)
 	{
-		++m_ActiveMiniGameIdx;
-		MiniGame* pMiniGame{ (*m_pMiniGames)[m_ActiveMiniGameIdx] };
-		pMiniGame->Activate();
-	}
-	else //all minigames completed
-	{
-		feedback.finishedBall = true;
-		feedback.totalBallPoints = m_Points;
-		bool perfectBall{ true };
-		for (const MiniGame* pMiniGame : *m_pMiniGames)
+		if (pMiniGame->GetState() == MiniGame::State::Failed)
 		{
-			if (pMiniGame->GetState() == MiniGame::State::Failed)
-			{
-				perfectBall = false;
-				break;
-			}
+			completedAll = false;
+			break;
 		}
-		feedback.perfectBall = perfectBall;
-		SetState(State::Finished);
 	}
+	return completedAll;
 }

@@ -12,7 +12,7 @@ public:
 
 	void Start();
 	void Draw() const;
-	void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback);
+	void Update(float dt, GameData::Input& input, GameData::Feedback& feedback);
 	void IncreaseDifficulty();
 private:
 	//Functions
