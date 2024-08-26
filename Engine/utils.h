@@ -71,6 +71,8 @@ namespace utils
 	void DrawPolygon( const Point2f* pVertices, size_t nrVertices, bool closed = true, float lineWidth = 1.0f );
 	void FillPolygon( const std::vector<Point2f>& vertices);
 	void FillPolygon( const Point2f* pVertices, size_t nrVertices);
+
+	void DrawVerticalLineInCircle(const Point2f& center, float rad, float cos, float lineWidth = 1.f);
 #pragma endregion OpenGLDrawFunctionality
 
 #pragma region CollisionFunctionality
@@ -118,5 +120,6 @@ namespace utils
 	- angle: in degrees, is converted to radians
 	*/
 	Point2f GetPointOnCircle(const Point2f center, float rad, float angle);
+	float ClampValueBetweenOthers(float value, float start, float end);
 #pragma endregion Other
 }

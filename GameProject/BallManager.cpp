@@ -8,6 +8,7 @@
 #include "SelectColorGame.h"
 #include "SpiralGatesGame.h"
 #include "WallDodgeGame.h"
+#include "LineScannerGame.h"
 
 BallManager::BallManager(const Rectf& viewport, float ballSize, float deadLineHeight)
 	: m_Viewport{ viewport }
@@ -93,7 +94,7 @@ void BallManager::CreateNewBall()
 	int numMiniGames{ rand() % (m_MaxNumMiniGamesPerBall - m_MinNumMiniGamesPerBall + 1) + m_MinNumMiniGamesPerBall };
 	std::vector<MiniGame*>* pMiniGames{ GetMiniGamesVector(numMiniGames) };
 	//MiniGame::DrawData drawData{ m_BallSize / 4.f, m_BallSize / 2.f, m_BallSize / 4.f };
-	//(*pMiniGames)[0] = new WallDodge(m_Difficulty, drawData);
+	//(*pMiniGames)[0] = new LineScannerGame(m_Difficulty, drawData);
 	float timeToComplete{ CalculateMiniGamesTime(*pMiniGames) };
 
 	float idleSpeed{ 100.f };
@@ -129,7 +130,7 @@ std::vector<MiniGame*>* BallManager::GetMiniGamesVector(int numMiniGames)
 	{
 		//Choose a random minigame
 		MiniGame*& pMiniGame{ (*pMiniGames)[i] };
-		int typeIdx{ rand() % 4 };
+		int typeIdx{ rand() % 3 };
 		switch (MiniGame::Type(typeIdx))
 		{
 		case MiniGame::Type::SelectColor:

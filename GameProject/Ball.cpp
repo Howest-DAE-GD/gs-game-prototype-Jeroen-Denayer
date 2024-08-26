@@ -145,7 +145,8 @@ void Ball::DrawMiniGameIndicators(float innerRad) const
 
 		float startAngleIndicator{ startAngle + i * arcLengthPerIndicator };
 		float endAngleIndicator{ startAngle + (i + 1) * arcLengthPerIndicator };
-		Spiral::DrawFilledArc(m_Pos, innerRad, outerRad, utils::Radians(startAngleIndicator), utils::Radians(endAngleIndicator));
+		Spiral::ArcInfo arcInfo{m_Pos, innerRad, outerRad, startAngleIndicator, endAngleIndicator };
+		Spiral::DrawFilledArc(arcInfo);
 	}
 
 	//Draw lines creating separate boxes
@@ -175,7 +176,6 @@ void Ball::SetState(State newState)
 		break;
 	}
 	case State::Finished:
-		int i = 0;
 		break;
 	}
 }

@@ -197,6 +197,7 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClCompile Include="BallManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="LineScannerGame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MiniGame.cpp" />
     <ClCompile Include="pch.cpp" />
@@ -212,6 +213,7 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClInclude Include="BallManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="LineScannerGame.h" />
     <ClInclude Include="MiniGame.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SetRotationGame.h" />

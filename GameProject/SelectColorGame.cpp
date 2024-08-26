@@ -28,7 +28,7 @@ SelectColorGame::SelectColorGame(int difficulty, const DrawData& drawData)
 	Init(m_Difficulty);
 }
 
-void SelectColorGame::Draw(Point2f pos) const
+void SelectColorGame::Draw(const Point2f& pos) const
 {
 	//Draw color regions
 	for (int i{}; i < m_NumUsedColorRegions; ++i)
@@ -37,7 +37,8 @@ void SelectColorGame::Draw(Point2f pos) const
 		float fromAngle{ colorRegion.angle - colorRegion.angleDeviation };
 		float tillAngle{ colorRegion.angle + colorRegion.angleDeviation };
 		utils::SetColor(s_Colors[colorRegion.colorIdx]);
-		Spiral::DrawFilledArc(pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(fromAngle), utils::Radians(tillAngle));
+		Spiral::ArcInfo arcInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, fromAngle, tillAngle };
+		Spiral::DrawFilledArc(arcInfo);
 	}
 
 	//Draw circle with the correct color that needs to be matched

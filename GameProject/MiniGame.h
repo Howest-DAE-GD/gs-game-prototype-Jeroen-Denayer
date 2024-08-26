@@ -13,7 +13,7 @@ public:
 
 	enum class Type
 	{
-		SetRotation, SelectColor, SpiralGates, WallDodge
+		SelectColor, SpiralGates, WallDodge, LineScanner, SetRotation
 	};
 
 	struct DrawData
@@ -23,7 +23,7 @@ public:
 		float centerRad;
 	};
 
-	virtual void Draw(Point2f pos) const = 0;
+	virtual void Draw(const Point2f& pos) const = 0;
 	virtual void Update(float dt, const GameData::Input& input, GameData::Feedback& feedback) = 0;
 	virtual void Init(int difficulty, bool activate = false) = 0;
 

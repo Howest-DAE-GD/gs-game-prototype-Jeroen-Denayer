@@ -339,6 +339,15 @@ void utils::FillPolygon( const Point2f *pVertices, size_t nrVertices )
 	}
 	glEnd( );
 }
+
+void utils::DrawVerticalLineInCircle(const Point2f& center, float rad, float cos, float lineWidth)
+{
+	float sin{ std::sqrtf(1 - cos * cos) };
+	Point2f pTop{ center.x + rad * cos, center.y + rad * sin };
+	Point2f pBottom{ center.x + rad * cos, center.y - rad * sin };
+	utils::DrawLine(pTop, pBottom, 3.f);
+}
+
 #pragma endregion OpenGLDrawFunctionality
 
 #pragma region CollisionFunctionality
@@ -806,6 +815,15 @@ bool utils::IsAngleBetween(float angle, float startAngle, float endAngle)
 Point2f utils::GetPointOnCircle(const Point2f center, float rad, float angle)
 {
 	return 	Point2f{ center.x + rad * std::cosf(utils::Radians(angle)), center.y + rad * std::sinf(utils::Radians(angle)) };
+}
+
+float utils::ClampValueBetweenOthers(float value, float start, float end)
+{
+	if (start > end)
+		std::swap(start, end);
+	if (value < start) value = start;
+	else if (value > end) value = end;
+	return value;
 }
 
 #pragma endregion CollisionFunctionality

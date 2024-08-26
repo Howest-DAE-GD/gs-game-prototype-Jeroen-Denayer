@@ -14,7 +14,21 @@ public:
 		centered, inner, outer, extrema
 	};
 
-	struct DrawInfo
+	enum class AngleMode
+	{
+		Degrees, Radians
+	};
+
+	struct ArcInfo
+	{
+		Point2f center;
+		float innerRad;
+		float outerRad;
+		float startAngle;
+		float endAngle;
+	};
+
+	struct SpiralInfo
 	{
 		Point2f center;
 		float startRad;
@@ -26,7 +40,7 @@ public:
 		DrawMode drawMode;
 	};
 
-	struct DrawRadInfo
+	struct SpiralRadInfo
 	{
 		float startInner;
 		float startOuter;
@@ -34,7 +48,7 @@ public:
 		float endOuter;
 	};
 
-	struct SpiralAngleInfo
+	struct SpiralInfoAtAngle
 	{
 		float spiralRad;
 		float centerRad;
@@ -43,21 +57,37 @@ public:
 		float width;
 	};
 
-	static void DrawLineOnSpiral(const DrawInfo& info, float angle, float lineWidth = 1.f);
+	static void DrawLineOnSpiral(const SpiralInfo& info, float angle, float lineWidth = 1.f);
 	static void DrawSpiralVertices(const Point2f& center, float startRad, float endRad, float startAngle, float endAngle);
 	static void DrawSpiral(const Point2f& center, float startRad, float endRad, float startAngle, float endAngle, float lineWidth = 1.f);
-	static void DrawArcBoundary(const Point2f& center, float innerRad, float outerRad, float startAngle, float endAngle, float lineWidth = 1.0f);
-	static void DrawFilledArc(const Point2f& center, float innerRad, float outerRad, float startAngle, float endAngle);
-	static void DrawSpiralBoundary(const DrawInfo& info, float lineWidth = 1.f);
-	static void DrawSpiralBoundary(const DrawInfo& info, const DrawRadInfo& radInfo, float lineWidth = 1.f);
-	static void DrawFilledSpiral(const DrawInfo& info);
-	static void DrawFilledSpiral(const DrawInfo& info, const DrawRadInfo& radInfo);
-	static void DrawPartialSpiralBoundary(const DrawInfo& info, float startAngle, float endAngle, float lineWidth = 1.f);
-	static void DrawPartiallyFilledSpiral(const DrawInfo& info, float startAngle, float endAngle);
-	static DrawInfo GetPartialSpiralDrawInfo(const DrawInfo& info, float startAngle, float endAngle);
-	static SpiralAngleInfo GetSpiralAngleInfo(const DrawInfo& info, float angle);
-	static DrawRadInfo GetDrawRadInfo(float startRad, float endRad, float startWidth, float endWidth, DrawMode drawMode);
+	
+	//Arcs
+	static void DrawArcBoundary(const ArcInfo& arcInfo, float lineWidth = 1.0f);
+	static void DrawFilledArc(const ArcInfo& arcInfo);
+	static void DrawPartialArcBoundary(const ArcInfo& arcInfo, float startAngle, float endAngle, float lineWidth = 1.f);
+	static void DrawPartiallyFilledArc(const ArcInfo& arcInfo, float startAngle, float endAngle);
+	
+	//Spirals
+	static void DrawSpiralBoundary(const SpiralInfo& info, float lineWidth = 1.f);
+	static void DrawFilledSpiral(const SpiralInfo& info);
+	static void DrawPartialSpiralBoundary(const SpiralInfo& info, float startAngle, float endAngle, float lineWidth = 1.f);
+	static void DrawPartiallyFilledSpiral(const SpiralInfo& info, float startAngle, float endAngle);
+	
+	//utility
+	static void SetAngleMode(AngleMode angleMode);
+	static SpiralInfo GetPartialSpiralInfo(const SpiralInfo& info, float startAngle, float endAngle);
+	static SpiralInfoAtAngle GetSpiralInfoAtAngle(const SpiralInfo& info, float angle);
+	static SpiralRadInfo GetSpiralRadInfo(float startRad, float endRad, float startWidth, float endWidth, DrawMode drawMode);
+	static float Degrees(float radians);
+	static float Radians(float degrees);
+	static bool IsAngleBetween(float angle, float startAngle, float endAngle);
+	static float ClampAngleBetween(float angle, float startAngle, float endAngle);
 private:
 	Spiral();
+
+	static void DrawSpiralBoundary(const SpiralInfo& info, const SpiralRadInfo& radInfo, float lineWidth = 1.f);
+	static void DrawFilledSpiral(const SpiralInfo& info, const SpiralRadInfo& radInfo);
+
+	static AngleMode s_AngleMode;
 };
 

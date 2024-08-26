@@ -3,7 +3,7 @@
 #include "Spiral.h"
 
 WallDodgeGame::WallDodgeGame(int difficulty, const DrawData& drawData)
-	:MiniGame(MiniGame::Type::WallDodge, difficulty, 0, drawData)
+	:MiniGame(MiniGame::Type::WallDodge, difficulty, 2, drawData)
 	, m_Dir{}
 	, m_StartOnInside{}
 	, m_BallOnInside{}
@@ -26,7 +26,7 @@ WallDodgeGame::WallDodgeGame(int difficulty, const DrawData& drawData)
 	Init(m_Difficulty);
 }
 
-void WallDodgeGame::Draw(Point2f pos) const
+void WallDodgeGame::Draw(const Point2f& pos) const
 {
 	glPushMatrix();
 	glTranslatef(pos.x, pos.y, 0.f);
@@ -38,9 +38,11 @@ void WallDodgeGame::Draw(Point2f pos) const
 	float outsideWallInnerRad{ m_DrawData.outerRad - wallHeight };
 	float insideWallOuterRad{ m_DrawData.innerRad + wallHeight };
 
+	Spiral::ArcInfo arcInfo{ centerPos, m_DrawData.innerRad, m_DrawData.outerRad, m_AreaStartAngle, m_AreaEndAngle };
+
 	//Draw area
 	utils::SetColor(Color3f{ 0.227f, 0.341f, 0.459f });
-	Spiral::DrawFilledArc(centerPos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(m_AreaStartAngle), utils::Radians(m_AreaEndAngle));
+	Spiral::DrawFilledArc(arcInfo);
 
 	//Draw walls
 	utils::SetColor(Color3f{ 0.075f, 0.122f, 0.31f });
@@ -57,8 +59,15 @@ void WallDodgeGame::Draw(Point2f pos) const
 		float wallOuterRad{ wall.onInside ? insideWallOuterRad : m_DrawData.outerRad };
 		float startAngle{ std::min(m_AreaEndAngle, std::max(wall.startAngle, m_AreaStartAngle)) };
 		float endAngle{ std::min(m_AreaEndAngle, std::max(wall.endAngle, m_AreaStartAngle)) };
-		Spiral::DrawFilledArc(centerPos, wallInnerRad, wallOuterRad, utils::Radians(startAngle), utils::Radians(endAngle));
+		Spiral::ArcInfo arcInfo{ centerPos, wallInnerRad, wallOuterRad, startAngle, endAngle };
+		Spiral::DrawFilledArc(arcInfo);
 	}
+
+	//Draw start/finish line
+	utils::SetColor(Color3f{ 0.f, 0.9f, 1.f });
+	float startFinishLineWidth{ 10.f };
+	Spiral::DrawPartiallyFilledArc(arcInfo, m_StartAngle, m_StartAngle + startFinishLineWidth);
+	Spiral::DrawPartiallyFilledArc(arcInfo, m_FinishAngle - startFinishLineWidth, m_FinishAngle);
 
 	//Draw ball
 	float ballRad{ laneWidth / 2.f * m_BallSizePercOfLane };
@@ -66,6 +75,11 @@ void WallDodgeGame::Draw(Point2f pos) const
 	Point2f ballPos{ utils::GetPointOnCircle(Point2f{0.f, 0.f}, ballCenterRad, m_BallAngle) };
 	utils::SetColor(Color3f{ 1.f, 1.f, 0.f });
 	utils::FillEllipse(ballPos, ballRad, ballRad);
+
+	//Draw area start/end line
+	utils::SetColor(Color3f{ 1.f, 1.f, 1.f });
+	utils::DrawRadialLine(centerPos, m_DrawData.innerRad, m_DrawData.outerRad, m_AreaStartAngle);
+	utils::DrawRadialLine(centerPos, m_DrawData.innerRad, m_DrawData.outerRad, m_AreaEndAngle);
 
 	glPopMatrix();
 }
@@ -183,6 +197,28 @@ void WallDodgeGame::ConfigureDifficulty(int difficulty)
 		m_Config.minWallArcLength = 15.f;
 		m_Config.maxWallArcLength = 30.f;
 		m_Config.lookAheadArcLength = 180.f;
+	}
+	else if (difficulty == 1)
+	{
+		m_Config.ballRotSpeed = 90.f;
+		m_Config.startEmptyArcLength = 50.f;
+		m_Config.finishArcLength = 45.f;
+		m_Config.minAngleBetweenWalls = 50.f;
+		m_Config.maxAngleBetweenWalls = 80.f;
+		m_Config.minWallArcLength = 15.f;
+		m_Config.maxWallArcLength = 30.f;
+		m_Config.lookAheadArcLength = 140.f;
+	}
+	else if (difficulty == 2)
+	{
+		m_Config.ballRotSpeed = 120.f;
+		m_Config.startEmptyArcLength = 40.f;
+		m_Config.finishArcLength = 45.f;
+		m_Config.minAngleBetweenWalls = 40.f;
+		m_Config.maxAngleBetweenWalls = 70.f;
+		m_Config.minWallArcLength = 15.f;
+		m_Config.maxWallArcLength = 30.f;
+		m_Config.lookAheadArcLength = 100.f;
 	}
 
 	m_Config.lookAheadArcLength = std::min(360.f - m_AreaGapArcLength, m_Config.lookAheadArcLength);

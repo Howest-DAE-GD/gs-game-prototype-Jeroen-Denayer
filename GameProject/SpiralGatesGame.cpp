@@ -17,12 +17,12 @@ SpiralGatesGame::SpiralGatesGame(int difficulty, const DrawData& drawData)
 	Init(m_Difficulty);
 }
 
-void SpiralGatesGame::Draw(Point2f pos) const
+void SpiralGatesGame::Draw(const Point2f& pos) const
 {
 	//Draw main spiral
 	float spiralWidth{ (m_DrawData.outerRad - m_DrawData.innerRad) / (m_Loops + 1) * 0.9f };
 	utils::SetColor(Color3f{ 0.31f, 0.216f, 0.055f });
-	Spiral::DrawInfo drawInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(m_StartAngle), utils::Radians(m_EndAngle), spiralWidth, spiralWidth, Spiral::DrawMode::extrema };
+	Spiral::SpiralInfo drawInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, m_StartAngle, m_EndAngle, spiralWidth, spiralWidth, Spiral::DrawMode::extrema };
 	Spiral::DrawFilledSpiral(drawInfo);
 
 	//Draw gates
@@ -33,8 +33,8 @@ void SpiralGatesGame::Draw(Point2f pos) const
 			utils::SetColor(Color3f{ 0.208f, 0.741f, 0.224f });
 		else
 			utils::SetColor(Color3f{ 0.741f, 0.537f, 0.204f });
-		Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(gate.startAngle), utils::Radians(gate.endAngle));
-		Spiral::SpiralAngleInfo angleInfo{ Spiral::GetSpiralAngleInfo(drawInfo, utils::Radians(gate.endAngle)) };
+		Spiral::DrawPartiallyFilledSpiral(drawInfo, gate.startAngle, gate.endAngle);
+		Spiral::SpiralInfoAtAngle angleInfo{ Spiral::GetSpiralInfoAtAngle(drawInfo, gate.endAngle) };
 		if (!gate.isOpen)
 		{
 			utils::SetColor(Color3f{ 1.f, 1.f, 1.f });
@@ -44,8 +44,8 @@ void SpiralGatesGame::Draw(Point2f pos) const
 
 	//Draw start and finish
 	utils::SetColor(Color3f{ 0.f, 0.9f, 1.f });
-	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_StartAngle), utils::Radians(m_StartAngle + m_SpiralDir * 10.f));
-	Spiral::DrawPartiallyFilledSpiral(drawInfo, utils::Radians(m_EndAngle - m_SpiralDir * 10.f), utils::Radians(m_EndAngle));
+	Spiral::DrawPartiallyFilledSpiral(drawInfo, m_StartAngle, m_StartAngle + m_SpiralDir * 10.f);
+	Spiral::DrawPartiallyFilledSpiral(drawInfo, m_EndAngle - m_SpiralDir * 10.f, m_EndAngle);
 
 	//Draw the selector
 	utils::SetColor(Color3f{ 1.f, 0.f, 0.f });

@@ -1,0 +1,67 @@
+Iteration 4
+
+-------------------
+##### Changes #####
+- added multiple minigames per ball
+- added visual indication of how many minigames a ball has
+- colored the indicators based on if the minigame is Idle, Active, Completed or Failed
+- added multiplier
+- added colored background to the balls
+- added scorching on the outside of each ball in an arc for the part that is below the deadLineHeight
+- added WallDodge minigame
+- added WallDodge difficulty scaling
+
+----------------------------
+##### Target Questions #####
+- Does multiple minigames inside of a single ball work?
+- Is the score multiplier mechanic any good?
+- Are the indicators for how many minigames a ball has clear?
+- Is removing the manual minigames better for the experience?
+
+--------------------
+##### Feedback #####
+Playtester 1: Wouter
+- SetRotation game (manual) is not clear/intuïtive at all that you have to control the line with left/right
+- make all rotating lines thicker and more visible
+- make green always good and red always bad
+- hard to understand minigames when first seeing them
+- start with 1 minigame and 1 per ball and introduce new minigames as you go while also increasing the number of minigames per ball
+- extra feedback when you are doing good/bad, extra sounds, flashing colors, "good job" appearing
+- really fun compared to previous iterations
+- didn't really understand the minigame indicators
+
+Playtester 2: Alex
+- removing the manual SetRotation minigame is way better and keeps you in the flow, maybe only have minigames with spacebar and not with left/right
+- WallDodge minigame is super cool however not super intuïtive what to do. Maybe change the walls with some spikes to clearly indicate danger
+- multiple minigames per ball is cool however having more balls with only 1 minigame is kind of the same
+- multiplier is a bit tucked away and he didn't look at it once while playing. Make the multiplier fancier when it goes up (eye candy)
+- think about the score system and how big numbers you want to see. It might be satisfying to see your score in the millions.
+- maybe add the concept of iteration2 into a minigame with a shape that you have to match
+- once you complete a ball add a fancy celebration or explosion or whatever (eye candy)
+
+Playtest 3: Yannick
+- this iteration is most entertaining so far
+- DodgeWall minigame is fun
+- he missed the SetRotation (manual) minigame when it was removed. It is possible to have manual minigames, however it needs to be made perfectly clear. Maybe make some balls only manual, while others are only automatic minigames.
+- more difficulties
+- more minigames
+- maybe add the idea of iteration 2 with the shape/size matching into a separate minigame
+- maybe only increase multiplier after 10 good minigames not after each perfect ball
+- score increases to quickly/too high numbers
+- show controls at the bottom of the screen
+
+--------------------
+##### Analysis #####
+- Does multiple minigames inside of a single ball work?
+	Everybody found this better than iteration 3 with only 1 minigame. However the switch from 1 minigame to the next inside of a single ball is sometimes very big. This is because some minigames are very different while others are kinda similar. A good idea that was given was to start the game with only a few simple minnigames. And after a while introduce new minigames that are similar to the previous but add something new. But this way people have to think less when they see a new minigame. Or another great idea was to only have similar minigames inside of each ball.
+- Is the score multiplier mechanic any good?
+	Score multiplier is nice as it gives insentive to complete all minigames perfectly. But some thought needs to be put into when the multiplier is increased, by how much, if there should be a cap.
+- Are the indicators for how many minigames a ball has clear?
+	Most people found this clear and intuïtive and a good addition.
+- Is removing the manual minigames better for the experience?
+	Heavily divided opinions for this one. Some really liked the extra complexity the manual minigames brought while others found that it got them out of the flow. Most came to a similar conlusion for how this could be fixed while keeping the manual minigames. And that is to somehow make it clearer when you have to do something yourself versus when you only have to press spacebar and the rest happens automatically. This could be done by having balls with only either manual minigames or only automatic minigames and visually distinguish between the 2.
+	
+Next idea:
+Make it so balls only have either manual or automatic minigames.
+Only have similar minigames inside of each ball. (Only possible when adding lots more minigames so something for the far future)
+More visual eye candy however this is not for the prototyping phase.

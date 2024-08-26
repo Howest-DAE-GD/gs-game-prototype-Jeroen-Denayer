@@ -13,14 +13,15 @@ SetRotationGame::SetRotationGame(int difficulty, const DrawData& drawData)
 	Init(m_Difficulty);
 }
 
-void SetRotationGame::Draw(Point2f pos) const
+void SetRotationGame::Draw(const Point2f& pos) const
 {
 	float startAngle{ m_ValidAngle - m_Config.validAngleDeviation };
 	float endAngle{ m_ValidAngle + m_Config.validAngleDeviation };
 
 	//Draw the valid angle region
 	utils::SetColor(Color3f{ 0.212f, 0.388f, 0.149f });
-	Spiral::DrawFilledArc(pos, m_DrawData.innerRad, m_DrawData.outerRad, utils::Radians(startAngle), utils::Radians(endAngle));
+	Spiral::ArcInfo arcInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, startAngle, endAngle };
+	Spiral::DrawFilledArc(arcInfo);
 
 	//Draw 2 lines to indicate the valid angle region
 	utils::SetColor(Color3f{ 0.067f, 0.18f, 0.027f });

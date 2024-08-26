@@ -1,0 +1,65 @@
+Iteration 3
+
+-------------------
+##### Changes #####
+- added utils::DrawArcBand and utils::FillArcBand functions
+- added new color functionality to the engine that enables you to set a global color and alpha to overwrite other colors. Handy to force an entire object to draw in a single color
+- added a deadline, you need to solve each ball before it passes below this line.
+- moved all spiral/arc drawing functions from utils to separate Spiral class
+- balls are now only active when they are fully visible on the screen
+- balls are bigger so they are more easily visible
+- added TimeToComplete() to all minigames
+- added struct Config{} to all minigames, this config changes depending on the difficulty
+- added ConfigureDifficulty() to all minigames
+- added smooth interpolation for the ball speed
+
+----------------------------
+##### Target Questions #####
+- Does the new idea with the minigames inside of the balls work? Is it fun?
+- Is the difficulty scaling fun?
+
+--------------------
+##### Feedback #####
+Playtester 1: Elke + Daan
+- the minigames inside of the ball are a great addition
+- really fun, however sometimes it wasn't clear what to do for some minigames
+- with the SpiralGatesGame make the gates turn green when you succesfully open them for extra visual feedback, or make them disappear entirely
+- difficulty scaling is fun and challenging
+
+Playtest 2: Alex
+- sometimes weird that the selector line doesn't move until the ball is fully on screen
+- iteration 2 was simpler to understand and maybe more mobile like while iteration 3 seems a bit overdesigned for mobile.
+- Maybe as another idea, you get 10min and solve as many minigames as possible in that time.
+- Start with only a single minigame and overtime introduce new minigames that look very similar to the previous minigames but that add something new
+- however iteration 3 has more potential for variation than iteration 2
+- minigame where you have to manually turn the selector throws you of when you already had multiple auto turning minigames and gets you out of the flow
+- ball speeding up catches you off guard
+- not clear that you don't need to click anymore at the end of the SpiralGates minigame
+- visual indication on each minigame if it is a manual or automatic minigame
+
+Playtester 3: Bart
+- Concept is way more fun than iteration 2
+- small bug with the SpiralGatesGame with clicking on already opened gates
+- horizontal deadLine is a bit distracting, maybe make it light grey
+- make the difficulty scale less quickly
+- add lots more minigames to increase fun/complexity/variation
+- make it so you only have 1 try per minigame, otherwise it is a bit confusing for example with the SpiralGatesGame restarting when you misclick
+- SelectColorGame and SetRotationGame could already be activated when not fully in view, it is good however that the SpiralGatesGame only starts when fully in view
+- add more difficulties
+
+Playtester 4: Yannick
+- not clear that you don't need to click anymore at the end of the SpiralGates minigame
+- game is fun but controls need to be made more clear
+- after a while it gets repetitive but this is solved with more minigames
+- it is confusing that some minigames are automatic and others you need to manually move an indicator, maybe make it clearer when a minigame is automatic or manual
+- maybe add a tutorial level to explain controls/minigames
+
+--------------------
+##### Analysis #####
+- Does the new idea with the minigames inside of the balls work? Is it fun?
+	Most preferred the idea of the minigames being played inside of the balls. As there is lots of opportunity for variation and complexity while also keeping the controls super simple so it would be possible for mobile. However, iteration 2 gave more of an endless type mobile game then iteration 3. But this could be fixed.
+- Is the difficulty scaling fun?
+	The difficulty scaling is fun however really hard to balance at the moment. Some people found the scaling okay, while others found it scaled to quickly. However this is part of a game balancing phase and not necessarily the iteration phase. That is why I wont be spending time on balancing right now.
+	
+Other:
+Many testers found it off-putting that some minigames are manual while others are automatic. Some ideas to fix this where add clear indicators on the screen for the controls per minigame. In the next iteration I will test manual vs automatic minigames.
