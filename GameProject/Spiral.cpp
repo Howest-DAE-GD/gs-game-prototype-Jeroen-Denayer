@@ -57,7 +57,7 @@ void Spiral::DrawArcBoundary(const ArcInfo& arcInfo, float lineWidth)
 {
 	float rad{ arcInfo.innerRad + 0.5f * (arcInfo.outerRad - arcInfo.innerRad) };
 	float width{ arcInfo.outerRad - arcInfo.innerRad };
-	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::DrawMode::centered };
+	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::SpiralDrawMode::centered };
 	DrawSpiralBoundary(drawInfo, lineWidth);
 }
 
@@ -65,7 +65,7 @@ void Spiral::DrawFilledArc(const ArcInfo& arcInfo)
 {
 	float rad{ arcInfo.innerRad + 0.5f * (arcInfo.outerRad - arcInfo.innerRad) };
 	float width{ arcInfo.outerRad - arcInfo.innerRad };
-	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::DrawMode::centered };
+	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::SpiralDrawMode::centered };
 	DrawFilledSpiral(drawInfo);
 }
 
@@ -77,9 +77,9 @@ void Spiral::DrawPartialArcBoundary(const ArcInfo& arcInfo, float startAngle, fl
 
 	float rad{ arcInfo.innerRad + 0.5f * (arcInfo.outerRad - arcInfo.innerRad) };
 	float width{ arcInfo.outerRad - arcInfo.innerRad };
-	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::DrawMode::centered };
+	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::SpiralDrawMode::centered };
 	SpiralInfo partialInfo{ GetPartialSpiralInfo(drawInfo, startAngle, endAngle) };
-	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, DrawMode::centered) };
+	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, SpiralDrawMode::centered) };
 	DrawSpiralBoundary(partialInfo, radInfo, lineWidth);
 }
 
@@ -91,9 +91,9 @@ void Spiral::DrawPartiallyFilledArc(const ArcInfo& arcInfo, float startAngle, fl
 
 	float rad{ arcInfo.innerRad + 0.5f * (arcInfo.outerRad - arcInfo.innerRad) };
 	float width{ arcInfo.outerRad - arcInfo.innerRad };
-	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::DrawMode::centered };
+	SpiralInfo drawInfo{ arcInfo.center, rad, rad, arcInfo.startAngle, arcInfo.endAngle, width ,width, Spiral::SpiralDrawMode::centered };
 	SpiralInfo partialInfo{ GetPartialSpiralInfo(drawInfo, startAngle, endAngle) };
-	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, DrawMode::centered) };
+	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, SpiralDrawMode::centered) };
 	DrawFilledSpiral(partialInfo, radInfo);
 }
 
@@ -108,7 +108,7 @@ void Spiral::DrawSpiralBoundary(const SpiralInfo& info, const SpiralRadInfo& rad
 	glLineWidth(lineWidth);
 	glBegin(GL_LINE_STRIP);
 	{
-		glVertex2f(info.center.x + radInfo.startInner * cos(info.startAngle), info.center.y + radInfo.startInner * sin(info.endAngle));
+		glVertex2f(info.center.x + radInfo.startInner * std::cosf(ConvertAngle(info.startAngle)), info.center.y + radInfo.startInner * std::sinf(ConvertAngle(info.startAngle)));
 		DrawSpiralVertices(info.center, radInfo.startOuter, radInfo.endOuter, info.startAngle, info.endAngle);
 		DrawSpiralVertices(info.center, radInfo.endInner, radInfo.startInner, info.endAngle, info.startAngle);
 	}
@@ -187,18 +187,119 @@ float Spiral::ClampAngleBetween(float angle, float startAngle, float endAngle)
 	return angle;
 }
 
+float Spiral::ConvertAngle(float angle)
+{
+	return s_AngleMode == AngleMode::Degrees ? Radians(angle) : angle;
+}
+
 void Spiral::DrawPartialSpiralBoundary(const SpiralInfo& info, float startAngle, float endAngle, float lineWidth)
 {
 	SpiralInfo partialInfo{ GetPartialSpiralInfo(info, startAngle, endAngle) };
-	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, DrawMode::centered) };
+	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, SpiralDrawMode::centered) };
 	DrawSpiralBoundary(partialInfo, radInfo, lineWidth);
 }
 
 void Spiral::DrawPartiallyFilledSpiral(const SpiralInfo& info, float startAngle, float endAngle)
 {
 	SpiralInfo partialInfo{ GetPartialSpiralInfo(info, startAngle, endAngle) };
-	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, DrawMode::centered) };
+	SpiralRadInfo radInfo{ GetSpiralRadInfo(partialInfo.startRad, partialInfo.endRad, partialInfo.startWidth, partialInfo.endWidth, SpiralDrawMode::centered) };
 	DrawFilledSpiral(partialInfo, radInfo);
+}
+
+void Spiral::DrawFilledHalfArrow(const Point2f& pos, const HalfArrowInfo& info, bool flip)
+{
+	if (info.endArcLength == 0)
+		return;
+
+	float startAngle{}, endAngle{};
+	float startRad{}, endRad{};
+	Vector2f startPoint{}, endPoint{};
+	Vector2f offset{};
+	if (info.outwardsCurve)
+	{
+		startAngle = float(M_PI) - ConvertAngle(std::abs(info.endArcLength));
+		endAngle = float(M_PI);
+		startRad = info.endRad;
+		endRad = info.baseRad;
+		startPoint = Vector2f{ (info.endRad - info.endHeight) * std::cosf(startAngle),  (info.endRad - info.endHeight) * std::sinf(startAngle) };
+		endPoint = Vector2f{ -info.baseRad + info.baseHeight, 0.f };
+		offset = Vector2f{ info.baseRad, 0.f};
+	}
+	else
+	{
+		startAngle = 0.f;
+		endAngle = ConvertAngle(std::abs(info.endArcLength));
+		startRad = info.baseRad;
+		endRad = info.endRad;
+		startPoint = Vector2f{ (info.baseRad + info.baseHeight) * std::cosf(startAngle), (info.baseRad + info.baseHeight) * std::sinf(startAngle) };
+		endPoint = Vector2f{ (info.endRad + info.endHeight) * std::cosf(endAngle), (info.endRad + info.endHeight) * std::sinf(endAngle) };
+		offset = Vector2f{ -info.baseRad, 0.f };
+	}
+
+	switch (info.drawMode)
+	{
+	case ArrowDrawMode::base:
+		//Default draw mode
+		break;
+	case ArrowDrawMode::centered:
+		offset.x += info.outwardsCurve ? -info.baseHeight / 2.f : -info.baseHeight / 2.f;
+		break;
+	case ArrowDrawMode::inner:
+		offset.x += info.outwardsCurve ? 0.f : -info.baseHeight;
+		break;
+	case ArrowDrawMode::outer:
+		offset.x += info.outwardsCurve ? -info.baseHeight : 0.f;
+		break;
+	}
+
+	glPushMatrix();
+	int yFlip{ info.endArcLength < 0 ? -1 : 1 };
+	int xFlip{ flip ? -1 : 1 };
+	glTranslatef(pos.x, pos.y, 0);
+	glRotatef(info.baseAngle, 0, 0, 1);
+	glScalef(xFlip, yFlip, 1);
+
+	glBegin(GL_TRIANGLE_STRIP);
+	{
+		float percOfArc{ 0.f };
+		float dAngle{ float(M_PI) / startRad };
+		for (float angle{ startAngle }; angle < endAngle; angle += dAngle)
+		{
+			percOfArc = std::abs(angle - startAngle) / std::abs(endAngle - startAngle);
+			float rad{ startRad + percOfArc * (endRad - startRad) };
+			Vector2f linePoint{ startPoint + percOfArc * (endPoint - startPoint) };
+			glVertex2f(rad * std::cosf(angle) + offset.x, rad * std::sinf(angle) + offset.y);
+			glVertex2f(linePoint.x + offset.x, linePoint.y + offset.y);
+			dAngle = float(M_PI) / rad * 2.f;
+		}
+		glVertex2f(endRad * std::cosf(endAngle) + offset.x, endRad * std::sinf(endAngle) + offset.y);
+		glVertex2f(endPoint.x + offset.x, endPoint.y + offset.y);
+	}
+	glEnd();
+
+	glPopMatrix();
+}
+
+void Spiral::DrawFilledArrow(const Point2f& pos, const ArrowInfo& info, bool flip)
+{
+	if (info.leftArcLength != 0.f)
+	{
+		HalfArrowInfo leftHalf{ info.baseAngle, info.baseRad, info.baseHeight, info.leftArcLength, info.leftRad, info.leftHeight, info.outwardsCurve, info.drawMode };
+		DrawFilledHalfArrow(pos, leftHalf, flip);
+	}
+	if (info.rightArcLength != 0.f)
+	{
+		HalfArrowInfo rightHalf{ info.baseAngle, info.baseRad, info.baseHeight, info.rightArcLength, info.rightRad, info.rightHeight, info.outwardsCurve, info.drawMode };
+		DrawFilledHalfArrow(pos, rightHalf, flip);
+	}
+}
+
+void Spiral::DrawFilledArrowOnArc(const ArcInfo& arcInfo, float baseAngle, float baseRad, const ArrowShapeDef& arrowShapeDef, bool flip)
+{
+	float xPos{ baseRad * std::cosf(ConvertAngle(baseAngle)) };
+	float yPos{ baseRad * std::sinf(ConvertAngle(baseAngle)) };
+	ArrowInfo arrowInfo{ baseAngle, baseRad, arrowShapeDef.baseHeight, arrowShapeDef.endArcLength, -arrowShapeDef.endArcLength, baseRad, baseRad, arrowShapeDef.endHeight, arrowShapeDef.endHeight, arrowShapeDef.outwardsCurve, arrowShapeDef.drawMode };
+	DrawFilledArrow(Point2f{ xPos, yPos }, arrowInfo, flip);
 }
 
 void Spiral::SetAngleMode(AngleMode angleMode)
@@ -212,7 +313,7 @@ Spiral::SpiralInfo Spiral::GetPartialSpiralInfo(const SpiralInfo& info, float st
 	endAngle = ClampAngleBetween(endAngle, info.startAngle, info.endAngle);
 	SpiralInfoAtAngle startAngleInfo{ GetSpiralInfoAtAngle(info, startAngle) };
 	SpiralInfoAtAngle endAngleInfo{ GetSpiralInfoAtAngle(info, endAngle) };
-	return SpiralInfo{ info.center, startAngleInfo.centerRad, endAngleInfo.centerRad, startAngle, endAngle, startAngleInfo.width, endAngleInfo.width, DrawMode::centered};
+	return SpiralInfo{ info.center, startAngleInfo.centerRad, endAngleInfo.centerRad, startAngle, endAngle, startAngleInfo.width, endAngleInfo.width, SpiralDrawMode::centered};
 }
 
 Spiral::SpiralInfoAtAngle Spiral::GetSpiralInfoAtAngle(const SpiralInfo& info, float angle)
@@ -235,7 +336,7 @@ Spiral::SpiralInfoAtAngle Spiral::GetSpiralInfoAtAngle(const SpiralInfo& info, f
 	return SpiralInfoAtAngle{ spiralRad, centerRad, innerRad, outerRad, width };
 }
 
-Spiral::SpiralRadInfo Spiral::GetSpiralRadInfo(float startRad, float endRad, float startWidth, float endWidth, DrawMode drawMode)
+Spiral::SpiralRadInfo Spiral::GetSpiralRadInfo(float startRad, float endRad, float startWidth, float endWidth, SpiralDrawMode drawMode)
 {
 	float minRad{ std::min(startRad, endRad) };
 	float maxRad{ std::max(startRad, endRad) };
@@ -246,25 +347,25 @@ Spiral::SpiralRadInfo Spiral::GetSpiralRadInfo(float startRad, float endRad, flo
 	float startInnerRad{}, startOuterRad{}, endInnerRad{}, endOuterRad{};
 	switch (drawMode)
 	{
-	case DrawMode::centered:
+	case SpiralDrawMode::centered:
 		startInnerRad = std::max(maxRad - startHalfWidth, 0.f);
 		startOuterRad = maxRad + startHalfWidth;
 		endInnerRad = std::max(minRad - endHalfWidth, 0.f);
 		endOuterRad = minRad + endHalfWidth;
 		break;
-	case DrawMode::inner:
+	case SpiralDrawMode::inner:
 		startInnerRad = std::max(maxRad - startWidth, 0.f);
 		startOuterRad = maxRad;
 		endInnerRad = std::max(minRad - endWidth, 0.f);
 		endOuterRad = minRad;
 		break;
-	case DrawMode::outer:
+	case SpiralDrawMode::outer:
 		startInnerRad = maxRad;
 		startOuterRad = maxRad + startWidth;
 		endInnerRad = minRad;
 		endOuterRad = minRad + endWidth;
 		break;
-	case DrawMode::extrema:
+	case SpiralDrawMode::extrema:
 		startInnerRad = maxRad - startWidth;
 		startOuterRad = maxRad;
 		endInnerRad = minRad;

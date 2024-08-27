@@ -22,7 +22,7 @@ void SpiralGatesGame::Draw(const Point2f& pos) const
 	//Draw main spiral
 	float spiralWidth{ (m_DrawData.outerRad - m_DrawData.innerRad) / (m_Loops + 1) * 0.9f };
 	utils::SetColor(Color3f{ 0.31f, 0.216f, 0.055f });
-	Spiral::SpiralInfo drawInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, m_StartAngle, m_EndAngle, spiralWidth, spiralWidth, Spiral::DrawMode::extrema };
+	Spiral::SpiralInfo drawInfo{ pos, m_DrawData.innerRad, m_DrawData.outerRad, m_StartAngle, m_EndAngle, spiralWidth, spiralWidth, Spiral::SpiralDrawMode::extrema };
 	Spiral::DrawFilledSpiral(drawInfo);
 
 	//Draw gates

@@ -14,7 +14,7 @@ Game::Game( const Window& window )
 	, m_Multiplier{}
 	, m_Score{}
 	, m_Difficulty{ 0 }
-	, m_PointsToIncreaseDifficulty{ std::vector<int>{100, 200, 500} }
+	, m_PointsToIncreaseDifficulty{ std::vector<int>{50, 100, 200} }
 	, m_StartLives{ 5 }
 	, m_MaxLives{ m_StartLives }
 	, m_Lives{ m_StartLives }
@@ -74,6 +74,25 @@ void Game::Draw() const
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	m_pBallManager->Draw();
+
+	//Arrow Demo
+	//utils::SetColor(Color4f{ 1.f, 1.f, 1.f, 1.f });
+	//Point2f center{ m_Viewport.width / 2.f, m_Viewport.height / 2.f };
+	//glPushMatrix();
+	//glTranslatef(center.x, center.y, 0);
+	//utils::DrawLine(Point2f{ -100.f, 0.f }, Point2f{ 100.f, 0.f });
+	//utils::DrawLine(Point2f{ 0.f, 100.f }, Point2f{ 0.f, -100.f });
+	//float outerRad{ 150.f };
+	//float innerRad{ 120.f };
+	//Spiral::ArcInfo arcInfo{ Point2f{0.f, 0.f}, innerRad, outerRad, 45.f, 135.f};
+	//Spiral::DrawArcBoundary(arcInfo);
+
+	//float rad{ 100.f };
+	//float angle{ 30.f };
+	//float width{ 0.f };
+	//Spiral::ArrowShapeDef arrowShapeDef{ 20.f, 15.f, 0.f, false, Spiral::ArrowDrawMode::base };
+	//Spiral::DrawFilledArrowOnArc(arcInfo, 90.f, innerRad, arrowShapeDef, false);
+	//glPopMatrix();
 
 	//Draw UI
 	float percOfLastLifeRemaining{ (m_TimeToLoseSingleLife - m_TimeSinceLastPress) / m_TimeToLoseSingleLife };
